@@ -29,9 +29,6 @@
     "test": "make test"
   },
   "devDependencies": {
-    "grunt-contrib-jshint": "~0.6.4",
-    "grunt-contrib-nodeunit": "~0.2.0",
-    "grunt-contrib-watch": "~0.5.3",
     "uglify-js": "~2.4.14",
     "typify-bin": "0.0.4",
     "jshint": "~2.5.1",
