@@ -27,6 +27,7 @@ BROWSERIFY=$(BINDIR)/browserify
 UGLIFY=$(BINDIR)/uglifyjs
 TYPIFY=$(BINDIR)/typify
 LJS=$(BINDIR)/ljs
+COVERALLS=$(BINDIR)/coveralls
 
 test : jshint mocha istanbul typify
 
@@ -55,5 +56,8 @@ typify :
 literate :
 	$(LJS) -c false -o README.md $(LJSSRC)
 
-dist : test uglify literate
+coveralls :
+	cat ./coverage/lcov.info | $(COVERALLS)
+
+dist : test coveralls uglify literate
 	git clean -fdx -e node_modules
