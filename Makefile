@@ -59,5 +59,5 @@ literate :
 coveralls :
 	cat ./coverage/lcov.info | $(COVERALLS)
 
-dist : test coveralls uglify literate
+dist : test uglify literate
 	git clean -fdx -e node_modules
