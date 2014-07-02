@@ -19,13 +19,18 @@ menrva.some('awe'); // some, as in awesome?
 
 ## API
 
+
 ### Option
 
 Also known as `Maybe`.
 
+
 #### equals
 
+
 #### map
+
+
 
 ## Contributing
 In lieu of a formal styleguide, take care to maintain the existing coding style. Add unit tests for any new or changed functionality.
@@ -34,6 +39,7 @@ In lieu of a formal styleguide, take care to maintain the existing coding style.
 
 
 - **0.0.1** Name reservation
+
 ## License
 
 Copyright (c) 2014 Oleg Grenrus.
