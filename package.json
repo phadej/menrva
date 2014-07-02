@@ -1,6 +1,6 @@
 {
   "name": "menrva",
-  "description": "Top secret",
+  "description": "Ambitious data-flow library",
   "version": "0.0.1",
   "homepage": "https://github.com/phadej/menrva",
   "author": {
@@ -37,7 +37,12 @@
     "browserify": "~4.2.0",
     "ljs": "~0.2.2",
     "coveralls": "~2.10.1",
-    "lodash": "~2.4.1"
+    "lodash": "~2.4.1",
+    "chai": "~1.9.1"
   },
-  "keywords": []
+  "keywords": [
+    "data",
+    "flow",
+    "reactive"
+  ]
 }

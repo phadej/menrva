@@ -32,7 +32,6 @@ COVERALLS=$(BINDIR)/coveralls
 test : jshint mocha istanbul typify
 
 jshint :
-	echo $(basename foo/bar)
 	$(JSHINT) $(SRC)
 
 mocha : 

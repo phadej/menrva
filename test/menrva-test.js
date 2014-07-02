@@ -3,6 +3,7 @@
 var menrva = require("../lib/menrva.js");
 var assert = require("assert");
 var _ = require("lodash");
+var chai = require("chai");
 
 describe("menrva", function () {
   it("was an Etruscan goddess of war, art, wisdom and health.", function () {
@@ -10,68 +11,56 @@ describe("menrva", function () {
   });
 });
 
-describe("egal", function () {
-  it("consider nan's as equal", function () {
-    assert(menrva.egal(NaN, NaN));
-  });
-
-  it("consider +0 and -0 non-equal", function () {
-    assert(!menrva.egal(+0, -0));
-  });
-});
-
-describe("Option", function () {
-  describe("map", function () {
-    describe("is a functor map", function () {
-      it("— identity law", function () {
-        var values = [
-          menrva.some(1),
-          menrva.some(2),
-          menrva.none,
-        ];
-
-        _.each(values, function (v) {
-          assert(v.map(_.identity).equals(v));
-        });
-      });
-
-      it("— composition law", function () {
-        function f(x) {
-          return x + 1;
-        }
-
-        function g(x) {
-          return x * 2;
-        }
-
-        var values = [
-          menrva.some(1),
-          menrva.some(2),
-          menrva.none,
-        ];
-
-        _.each(values, function (v) {
-          assert(v.map(f).map(g).equals(v.map(_.compose(g, f))));
-        });
-      });
+describe("triangle shape", function () {
+  /*
+    a = source()
+    b = a + 1
+    c = a + b =  2 * a + 1
+  */
+  var a, b, c;
+  beforeEach(function () {
+    a = new menrva.Source(1);
+    b = a.map(function (x) { return x + 1; });
+    c = menrva.combine(a, b, function (x, y) {
+      return x + y;
     });
   });
 
-  describe("orElse", function () {
-    it("unwraps options", function () {
-      var e = 5;
-      var values = [
-        [menrva.some(1), 1],
-        [menrva.some(2), 2],
-        [menrva.none, e],
-      ];
-
-      _.each(values, function (p) {
-        var v = p[0];
-        var r = p[1];
-
-        assert(v.orElse(e) === r);
-      });
+  describe("initial case", function () {
+    it("value is calculated already", function () {
+      chai.expect(c.value).to.equal(3);
     });
+    
+    it("when adding onValue callback, it's executed synchronously", function () {
+      var x = 2;
+      var count = 0;
+      c.onValue(function (y) {
+        x = y;
+        count += 1;
+      });
+      chai.expect(x).to.equal(3);
+      chai.expect(count).to.equal(1);
+    });
+  });
+
+  it("updating", function () {
+    var count = 0;
+    c.onValue(function (y) {
+      count += 1;
+    });
+
+    chai.expect(c.value).to.equal(3);
+    chai.expect(count).to.equal(1);
+
+    var transaction = new menrva.Transaction();
+    a.set(transaction, 2);
+
+    chai.expect(c.value).to.equal(3);
+    chai.expect(count).to.equal(1);
+
+    transaction.commit();
+
+    chai.expect(c.value).to.equal(5);
+    chai.expect(count).to.equal(2);
   });
 });
