@@ -10,6 +10,16 @@ describe("menrva", function () {
   });
 });
 
+describe("egal", function () {
+  it("consider nan's as equal", function () {
+    assert(menrva.egal(NaN, NaN));
+  });
+
+  it("consider +0 and -0 non-equal", function () {
+    assert(!menrva.egal(+0, -0));
+  });
+});
+
 describe("Option", function () {
   describe("map", function () {
     describe("is a functor map", function () {

@@ -20,15 +20,31 @@ menrva.some('awe'); // some, as in awesome?
 ## API
 
 
+### Equalities
+
+#### egal (a, b) : boolean
+
+http://wiki.ecmascript.org/doku.php?id=harmony:egal
+
+
+
 ### Option
 
 Also known as `Maybe`.
 
 
-#### equals
+#### equals (@ : option a, other : *, eq = eqal) : boolean
+
+Equality check.
 
 
-#### map
+#### map (@ : option a, f : a -> b) : option b
+
+
+#### elim (@ : option a, x : b, f : a -> b) : b
+
+
+#### orElse (@ : option a, x : a) : a
 
 
 
