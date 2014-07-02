@@ -14,7 +14,9 @@ MINSRC=$(BUNDLEDST)
 MINDST=$(DISTDIR)/$(DISTPREFIX).min.js
 MINMAP=$(DISTDIR)/$(DISTPREFIX).min.js.map
 
-.PHONY : all test jshint mocha istanbul browserify typify dist
+LJSSRC=lib/menrva.js
+
+.PHONY : all test jshint mocha istanbul browserify typify literate dist
 
 BINDIR=node_modules/.bin
 
@@ -24,6 +26,7 @@ JSHINT=$(BINDIR)/jshint
 BROWSERIFY=$(BINDIR)/browserify
 UGLIFY=$(BINDIR)/uglifyjs
 TYPIFY=$(BINDIR)/typify
+LJS=$(BINDIR)/ljs
 
 test : jshint mocha istanbul typify
 
@@ -49,5 +52,8 @@ uglify : browserify $(SRC)
 typify :
 	$(TYPIFY) $(MOCHA) $(TESTSRC)
 
-dist : test uglify
+literate :
+	$(LJS) -c false -o README.md $(LJSSRC)
+
+dist : test uglify literate
 	git clean -fdx -e node_modules
