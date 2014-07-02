@@ -1,0 +1,9 @@
+.jshintrc
+.travis.yml
+.npmignore
+
+Makefile
+
+dist/
+coverage/
+test/

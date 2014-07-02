@@ -1,0 +1,45 @@
+{
+  "name": "menrva",
+  "description": "Top secret",
+  "version": "0.0.1",
+  "homepage": "https://github.com/phadej/menrva",
+  "author": {
+    "name": "Oleg Grenrus",
+    "email": "oleg.grenrus@iki.fi",
+    "url": "http://oleg.fi"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/phadej/menrva.git"
+  },
+  "bugs": {
+    "url": "https://github.com/phadej/menrva/issues"
+  },
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "https://github.com/phadej/menrva/blob/master/LICENSE"
+    }
+  ],
+  "main": "lib/menrva",
+  "engines": {
+    "node": ">= 0.10.0"
+  },
+  "scripts": {
+    "test": "make test"
+  },
+  "devDependencies": {
+    "grunt-contrib-jshint": "~0.6.4",
+    "grunt-contrib-nodeunit": "~0.2.0",
+    "grunt-contrib-watch": "~0.5.3",
+    "uglify-js": "~2.4.14",
+    "typify-bin": "0.0.4",
+    "jshint": "~2.5.1",
+    "istanbul": "~0.2.13",
+    "mocha": "~1.20.1",
+    "browserify": "~4.2.0",
+    "ljs": "~0.2.1",
+    "lodash": "~2.4.1"
+  },
+  "keywords": []
+}
