@@ -1,1 +1,2 @@
+- **0.0.2** Basic data-flow functionality
 - **0.0.1** Name reservation
