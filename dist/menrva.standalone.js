@@ -362,7 +362,11 @@ Source.prototype.modify = function (transaction, f) {
 
   > combine (Signal a..., f : a... -> b) : Signal b
 
-  Applicative n-ary lift.
+  Applicative n-ary lift. Lift pure function to operate on signals:
+  ```js
+  var $sum = menrva.combine($a, $b, function (a, b) {
+    return a + b;
+  });
 */
 function combine() {
   var signals = Array.prototype.slice.call(arguments, 0, -1);
