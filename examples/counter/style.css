@@ -1,0 +1,29 @@
+.container {
+  width: 200px;
+  box-sizing: border-box;
+  padding: 5px;
+  border: 1px solid #eee;
+  text-align: center;
+}
+.container div {
+  padding: 5px;
+}
+#counter {
+  border-bottom: 1px solid #ccc;
+  font-weight: bold;
+  font-family: sans-serif;
+  font-size: 20px;
+}
+button {
+  background-color: #369;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 20px;
+}
+button:active {
+  background-color: #69c;
+}
+button:disabled {
+  background-color: #999;
+}
