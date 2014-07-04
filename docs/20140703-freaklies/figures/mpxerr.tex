@@ -1,0 +1,16 @@
+%&latex
+
+\gdef\mpxshipout{\shipout\hbox\bgroup
+  \setbox0=\hbox\bgroup}
+\gdef\stopmpxshipout{\egroup  \dimen0=\ht0 \advance\dimen0\dp0
+  \dimen1=\ht0 \dimen2=\dp0
+  \setbox0=\hbox\bgroup
+    \box0
+    \ifnum\dimen0>0 \vrule width1sp height\dimen1 depth\dimen2 
+    \else \vrule width1sp height1sp depth0sp\relax
+    \fi\egroup
+  \ht0=0pt \dp0=0pt \box0 \egroup}
+\mpxshipout% line 19 ./mvc.mp
+\textbf{MODEL}%
+\stopmpxshipout
+\end{document}

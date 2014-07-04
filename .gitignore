@@ -1,2 +1,11 @@
 node_modules
 coverage
+
+# tex auxillary files
+*.aux
+*.log
+*.out
+*.toc
+
+# metapos
+*.mpx

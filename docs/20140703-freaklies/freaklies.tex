@@ -1,0 +1,285 @@
+\documentclass[10pt,fleqn]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{fullpage}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{mathrsfs} % mathscr
+\usepackage{color}
+\usepackage[paperwidth=160mm,paperheight=90mm,margin=10mm]{geometry}
+
+% multicol
+\usepackage{multicol}
+\usepackage{array}
+
+% graphics
+\usepackage{graphicx}
+\DeclareGraphicsRule{*}{mps}{*}{}
+
+\usepackage{hyperref}
+\hypersetup{
+  colorlinks=true
+}
+
+\usepackage{mathpazo}
+\usepackage{helvet}
+%\usepackage{courier}
+\usepackage{inconsolata}
+
+\usepackage{titling}
+\newcommand{\subtitle}[1]{%
+  \posttitle{%
+    \par\end{center}
+    \begin{center}\large#1\end{center}
+    \vskip0.5em}%
+}
+
+\title{$\mathbb{MENRVA}$}
+\subtitle{@futurice freaklies}
+\author{Oleg Grenrus}
+\date{July 03, 2014}
+
+\DeclareMathOperator*{\inr}{\mathsf{inr}}
+\DeclareMathOperator*{\inl}{\mathsf{inl}}
+\DeclareMathOperator*{\none}{\mathsf{none}}
+\DeclareMathOperator*{\some}{\mathsf{some}}
+\DeclareMathOperator*{\ap}{\mathsf{ap}}
+\DeclareMathOperator*{\fst}{\mathsf{fst}}
+\DeclareMathOperator*{\snd}{\mathsf{snd}}
+
+% Theorems
+% http://en.wikibooks.org/wiki/LaTeX/Theorems
+
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}[section]
+\newtheorem{example}[definition]{Example}
+\newtheorem{exercise}[definition]{Exercise}
+\newtheorem{note}[definition]{Note}
+
+\theoremstyle{plain}
+\newtheorem{proposition}[definition]{Proposition}
+\newtheorem{lemma}[definition]{Lemma}
+\newtheorem{theorem}[definition]{Theorem}
+
+\pagestyle{empty}
+
+\definecolor{blue}{rgb}{0,0,0.5}
+\definecolor{green}{rgb}{0,0.5,0}
+\definecolor{red}{rgb}{0.5,0,0}
+\definecolor{orange}{rgb}{1,0.5,0}
+\definecolor{darkorange}{rgb}{0.5,0.25,0}
+\definecolor{lightgrey}{rgb}{0.7,0.7,0.7}
+\definecolor{grey}{rgb}{0.5,0.5,0.5}
+
+\setlength\parindent{0pt}
+\setlength{\parskip}{3mm plus1mm minus1mm}
+
+\newcommand{\identifier}[1]{\texttt{\color{blue}#1}}
+\newcommand{\constructor}[1]{\ensuremath{\mathsf{\color{green}#1}}}
+\newcommand{\functor}[1]{\ensuremath{\mathcal{\color{darkorange}#1}}}
+
+\begin{document}
+
+
+\maketitle
+\thispagestyle{empty}
+\newpage
+
+{\LARGE$\mathbb{MENRVA}$-- yet another reactive library}
+
+\href{https://github.com/baconjs/bacon.js}{\textsc{Bacon.js}} is (almost) non-glitchy, but not-so performant.
+\href{https://github.com/Reactive-Extensions/RxJS}{\textsc{RxJS}} is glitchy but performant.
+
+I begin to bias towards using cold-observables of \textsc{RxJS}\footnote{Can use \textsc{Bacon.js} too, but I don't need glitch-free events} (the good parts?) with data-flow propagation of something else ($=$ \textsc{Menrva}).
+
+\begin{center}
+\includegraphics[scale=0.7]{figures/data-events.mps}
+\end{center}
+
+\newpage
+
+\section*{Semantics}
+
+Following definitions are from \emph{Push-pull functional reactive programming}\footnote{Conal Elliott, \emph{Push-pull functional reactive programming}, Haskell Symposium, 2009, \url{http://conal.net/papers/push-pull-frp/}}.
+
+\subsection*{FRP -- Behavior}
+
+Semantically, a \emph{(reactive) behavior} is just a function of time. In \textsc{Menrva} we call them \emph{signals}.
+\begin{align*}
+\mathcal{S}\,\alpha = \mathcal{T} \to \alpha
+\end{align*}
+
+Historically in FRP, $\mathcal{T} = \mathbb{R}$. As we’ll see, however, the semantics of behaviors assumes only that $\mathcal{T}$ is totally ordered. 
+
+\newpage
+
+\subsubsection*{Applicative functor}
+
+Pure functions can be "lifted" to apply to signals. Classic FRP (CFRP) had a family of lifting combinators:
+\begin{align*}
+\texttt{lift}_n &:: (\alpha_1 \to \cdots \alpha_n \to \beta) \to (\mathcal{S}\,\alpha_1 \to \cdots \mathcal{S}\,\alpha_n \to \mathcal{S}\,\beta)
+\end{align*}
+Lifting is pointwise and synchronous:
+\begin{align*}
+\texttt{lift}_n\,f\,b_1\cdots b_n &= \lambda\,t \mapsto f (b_1\, t)\cdots (b_n\, t)
+\end{align*}
+The \emph{Functor} \texttt{map} is $\texttt{lift}_1$:
+\begin{align*}
+\texttt{map}\,f\,b = f \circ b
+\end{align*}
+
+\newpage
+
+In \textsc{Menrva} \texttt{map} is \texttt{map} and $\texttt{lift}_n$ is \texttt{combine} (with function parameter at the end):
+\begin{verbatim}
+var $sq = $source.map(function (x) {
+  return x * x;
+});
+
+var $quad = menrva.combine($a, $b, $c, function (a, b, c) {
+  return a * b + c;
+});
+\end{verbatim}
+
+And that's the whole (functional) API. 
+
+{\small There is \texttt{onValue} to observe changes. And \texttt{set} and \texttt{modify} to initiate changes.}
+
+\newpage
+
+\subsubsection*{Monad}
+
+Although Signal is a semantic \emph{Monad} as well, \textsc{Menrva} doesn't have monadic \texttt{join} combinator.
+
+Semantic of \texttt{join} is simple, but the correct implementation hard.
+\begin{align*}
+\texttt{join}\,s = t \mapsto s\,t\,t
+\end{align*}
+
+Monad instance would make possible to make dynamic data flow networks. With applicative functor the shape of the network is static (and you can't make loops) $\equiv$ simple and easy.
+
+\newpage
+
+\section*{Examples}
+
+\url{https://github.com/phadej/menrva/tree/master/examples}
+
+\begin{itemize}
+\item \emph{counter} examples (pun not-intended). With data-first approach, you segregate \emph{query} from \emph{control}.
+\item \emph{suggestions} \href{https://gist.github.com/staltz/868e7e9bc2a7b8c1f754}{\emph{The introduction to Reactive Programming you've been missing}}
+\end{itemize}
+
+\newpage
+
+
+\section*{What are plans for \textsc{Menrva}?}
+
+Write more examples, to verify that \textsc{Menrva}'s simplistic approach is enough for the real world.
+
+\hspace{5mm}\vdots
+
+Use in the real world application.
+
+\hspace{5mm}\vdots
+
+PROFIT!
+
+\newpage
+
+\section*{What are you going to add still?}
+
+Something to handle network destruction.
+% Currently all nodes are double linked (parent $\leftrightarrow$ child).
+Thus dynamically created (and destroyed) UI components create leaf-subnetwork which should be cleaned up.
+\textsc{JavaScript} doesn't have weak references (which might be enough to solve the problem).
+So we need some manual mechanism for cleanup.
+
+One idea is to make own reference counting:
+\begin{verbatim}
+var $state = menrva.source(...);
+var $derived = $state.map(...).retain();
+
+var $componentData = $derived.map(...).retain();
+// cleanup:
+$componentData.release(); // also removes all callbacks etc.
+\end{verbatim}
+\newpage
+
+
+\section*{What are you going to add still? -- 2}
+
+Should we have monadic join? (= \texttt{flatMap}). Do we really need it? Can be worked around, but sometimes it is convenient:
+{\small
+\begin{verbatim}
+$artistImage = $artist.flatmap(getArtistImageSignal);
+
+function getArtistImageSignal(artist) {
+  if (!cache[artist.id]) { 
+    cache[artist.id] = menrva.source(placeholderImage);
+    
+    // schedule carousel for images...
+  }
+  return cache[artist.id];
+}
+\end{verbatim}
+}
+Here the cache (or artist image store) can be signal itself -- no need for \texttt{flatMap}.
+
+
+\section*{What are you going to add still? -- 3}
+
+\emph{Borrow} goodies from \textsc{Bacon.js} -- Function construction rules:
+\begin{verbatim}
+$signal.map(".foo"); // shorter way of saying:
+$signal.map(function (x) {
+  return x.foo;
+});
+\end{verbatim}
+
+\newpage
+
+
+\section*{What are you going to add still? -- 4}
+
+Lenses. Sub-value of source acting as source itself.
+\begin{verbatim}
+var $foobar = $source.lens("foo.bar");
+
+$foobar.set(tx, value); // the same as
+$source.modify(tx, function (source) {
+  return assocIn(source, ["foo", "bar"], value);
+});
+\end{verbatim}
+\texttt{assocIn} -- \url{http://clojuredocs.org/clojure_core/clojure.core/assoc-in}
+
+\newpage
+
+\section*{And why the choice for transactions?}
+
+You able to update many source simultaneously, avoiding immediate propagation:
+\begin{verbatim}
+var $a = menrva.source(1);
+var $b = menrva.source(2);
+
+menrva.combine($a, $b, add).onValue(console.log);
+
+var tx = menrva.transaction();
+$a.set(tx, 2);
+$b.set(tx, 3);
+tx.commit();
+\end{verbatim}
+
+\section*{And why the choice for transactions? -- 2}
+
+Also to mention, transactions arise naturally, if you try to implement anything similar in
+\textsc{Haskell} or \textsc{Clojure} (using \textsc{STM}).
+
+There you will be forced to do all mutation inside STM transaction.
+
+Changes initiated in transaction are applied only when you commit the transaction: you \emph{always} have consistent data.
+
+\newpage
+{\LARGE the end}
+\newpage
+
+
+\end{document}
