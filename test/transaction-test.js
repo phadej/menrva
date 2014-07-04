@@ -13,7 +13,7 @@ describe("transaction", function () {
   */
   var a, b, c;
   beforeEach(function () {
-    a = new menrva.Source(1);
+    a = menrva.source(1);
     b = a.map(function (x) { return x + 1; });
     c = menrva.combine(a, b, function (x, y) {
       return x + y;
@@ -30,10 +30,10 @@ describe("transaction", function () {
       chai.expect(c.value).to.equal(3);
       chai.expect(count).to.equal(1);
 
-      var transaction = new menrva.Transaction();
-      a.set(transaction, 2);
-      a.set(transaction, 3);
-      transaction.commit();
+      var tx = menrva.transaction();
+      a.set(tx, 2);
+      a.set(tx, 3);
+      tx.commit();
 
       chai.expect(c.value).to.equal(7);
       chai.expect(count).to.equal(2);
@@ -48,10 +48,10 @@ describe("transaction", function () {
       chai.expect(c.value).to.equal(3);
       chai.expect(count).to.equal(1);
 
-      var transaction = new menrva.Transaction();
-      a.set(transaction, 2);
-      a.set(transaction, 1);
-      transaction.commit();
+      var tx = menrva.transaction();
+      a.set(tx, 2);
+      a.set(tx, 1);
+      tx.commit();
 
       chai.expect(c.value).to.equal(3);
       chai.expect(count).to.equal(1);
@@ -68,12 +68,12 @@ describe("transaction", function () {
       chai.expect(c.value).to.equal(3);
       chai.expect(count).to.equal(1);
 
-      var transaction = new menrva.Transaction();
-      a.set(transaction, 2);
-      transaction.rollback();
+      var tx = menrva.transaction();
+      a.set(tx, 2);
+      tx.rollback();
 
       // TODO: we can make this either fail for rollbacked transactions, or let set's do nothing
-      transaction.commit();
+      tx.commit();
 
       chai.expect(c.value).to.equal(3);
       chai.expect(count).to.equal(1);
@@ -88,13 +88,13 @@ describe("transaction", function () {
       chai.expect(c.value).to.equal(3);
       chai.expect(count).to.equal(1);
 
-      var transaction = new menrva.Transaction();
-      a.set(transaction, 2);
-      transaction.rollback();
-      transaction.rollback();
+      var tx = menrva.transaction();
+      a.set(tx, 2);
+      tx.rollback();
+      tx.rollback();
 
       // TODO: we can make this either fail for rollbacked transactions, or let set's do nothing
-      transaction.commit();
+      tx.commit();
 
       chai.expect(c.value).to.equal(3);
       chai.expect(count).to.equal(1);
@@ -110,8 +110,8 @@ describe("transaction", function () {
     chai.expect(c.value).to.equal(3);
     chai.expect(count).to.equal(1);
 
-    var transaction = new menrva.Transaction();
-    a.set(transaction, 2);
+    var tx = menrva.transaction();
+    a.set(tx, 2);
 
     setTimeout(function () {
       chai.expect(c.value).to.equal(5);
@@ -129,8 +129,8 @@ describe("transaction - a + b", function () {
   */
   var a, b, c;
   beforeEach(function () {
-    a = new menrva.Source(1);
-    b = new menrva.Source(2);
+    a = menrva.source(1);
+    b = menrva.source(2);
     c = menrva.combine(a, b, function (x, y) {
       return x + y;
     });
@@ -146,10 +146,10 @@ describe("transaction - a + b", function () {
       chai.expect(c.value).to.equal(3);
       chai.expect(count).to.equal(1);
 
-      var transaction = new menrva.Transaction();
-      a.set(transaction, 2);
-      b.set(transaction, 3);
-      transaction.commit();
+      var tx = menrva.transaction();
+      a.set(tx, 2);
+      b.set(tx, 3);
+      tx.commit();
 
       chai.expect(c.value).to.equal(5);
       chai.expect(count).to.equal(2);
@@ -164,10 +164,10 @@ describe("transaction - a + b", function () {
       chai.expect(c.value).to.equal(3);
       chai.expect(count).to.equal(1);
 
-      var transaction = new menrva.Transaction();
-      a.set(transaction, 2);
-      b.set(transaction, 1);
-      transaction.commit();
+      var tx = menrva.transaction();
+      a.set(tx, 2);
+      b.set(tx, 1);
+      tx.commit();
 
       chai.expect(c.value).to.equal(3);
       chai.expect(count).to.equal(1);
@@ -185,9 +185,9 @@ describe("transaction - a + b + c", function () {
   */
   var a, b, c, d, e;
   beforeEach(function () {
-    a = new menrva.Source(1);
-    b = new menrva.Source(2);
-    c = new menrva.Source(3);
+    a = menrva.source(1);
+    b = menrva.source(2);
+    c = menrva.source(3);
     d = menrva.combine(a, b, function (x, y) {
       return x + y;
     });
@@ -206,10 +206,10 @@ describe("transaction - a + b + c", function () {
       chai.expect(e.value).to.equal(6);
       chai.expect(count).to.equal(1);
 
-      var transaction = new menrva.Transaction();
-      a.set(transaction, 2);
-      b.set(transaction, 3);
-      transaction.commit();
+      var tx = menrva.transaction();
+      a.set(tx, 2);
+      b.set(tx, 3);
+      tx.commit();
 
       chai.expect(e.value).to.equal(8);
       chai.expect(count).to.equal(2);
@@ -231,11 +231,11 @@ describe("transaction - a + b + c", function () {
       chai.expect(countD).to.equal(1);
       chai.expect(countE).to.equal(1);
 
-      var transaction = new menrva.Transaction();
-      a.set(transaction, 2);
-      b.set(transaction, 3);
-      c.set(transaction, 1);
-      transaction.commit();
+      var tx = menrva.transaction();
+      a.set(tx, 2);
+      b.set(tx, 3);
+      c.set(tx, 1);
+      tx.commit();
 
       chai.expect(d.value).to.equal(5);
       chai.expect(e.value).to.equal(6);

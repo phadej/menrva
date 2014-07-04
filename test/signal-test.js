@@ -13,7 +13,7 @@ describe("signal", function () {
   */
   var a, b, c;
   beforeEach(function () {
-    a = new menrva.Source(1);
+    a = menrva.source(1);
     b = a.map(function (x) { return x + 1; });
     c = menrva.combine(a, b, function (x, y) {
       return x + y;
@@ -30,17 +30,17 @@ describe("signal", function () {
       chai.expect(c.value).to.equal(3);
       chai.expect(count).to.equal(1);
 
-      var transaction = new menrva.Transaction();
-      a.set(transaction, 2);
-      a.modify(transaction, function (x) { return x * x; });
-      transaction.commit();
+      var tx1 = menrva.transaction();
+      a.set(tx1, 2);
+      a.modify(tx1, function (x) { return x * x; });
+      tx1.commit();
 
       chai.expect(c.value).to.equal(9);
       chai.expect(count).to.equal(2);
 
-      var transaction = new menrva.Transaction();
-      a.modify(transaction, function (x) { return x * x; });
-      transaction.commit();
+      var tx2 = menrva.transaction();
+      a.modify(tx2, function (x) { return x * x; });
+      tx2.commit();
 
       chai.expect(c.value).to.equal(33);
       chai.expect(count).to.equal(3);
@@ -57,18 +57,18 @@ describe("signal", function () {
       chai.expect(c.value).to.equal(3);
       chai.expect(count).to.equal(1);
 
-      var transaction = new menrva.Transaction();
-      a.set(transaction, 2);
-      transaction.commit();
+      var tx1 = menrva.transaction();
+      a.set(tx1, 2);
+      tx1.commit();
 
       chai.expect(c.value).to.equal(5);
       chai.expect(count).to.equal(2);
 
       unsub();
 
-      var transaction = new menrva.Transaction();
-      a.set(transaction, 3);
-      transaction.commit();
+      var tx2 = menrva.transaction();
+      a.set(tx2, 3);
+      tx2.commit();
 
       chai.expect(c.value).to.equal(7);
       chai.expect(count).to.equal(2);
@@ -76,9 +76,9 @@ describe("signal", function () {
       // you can unsub many times - second and following calls are no-op
       unsub();
 
-      var transaction = new menrva.Transaction();
-      a.set(transaction, 2);
-      transaction.commit();
+      var tx3 = menrva.transaction();
+      a.set(tx3, 2);
+      tx3.commit();
 
       chai.expect(c.value).to.equal(5);
       chai.expect(count).to.equal(2);

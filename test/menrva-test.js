@@ -19,7 +19,7 @@ describe("triangle shape", function () {
   */
   var a, b, c;
   beforeEach(function () {
-    a = new menrva.Source(1);
+    a = menrva.source(1);
     b = a.map(function (x) { return x + 1; });
     c = menrva.combine(a, b, function (x, y) {
       return x + y;
@@ -52,13 +52,13 @@ describe("triangle shape", function () {
     chai.expect(c.value).to.equal(3);
     chai.expect(count).to.equal(1);
 
-    var transaction = new menrva.Transaction();
-    a.set(transaction, 2);
+    var tx = menrva.transaction();
+    a.set(tx, 2);
 
     chai.expect(c.value).to.equal(3);
     chai.expect(count).to.equal(1);
 
-    transaction.commit();
+    tx.commit();
 
     chai.expect(c.value).to.equal(5);
     chai.expect(count).to.equal(2);

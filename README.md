@@ -67,6 +67,8 @@ The core type of menrva. `Signal` is abstract class, and cannot be created expli
 
 Similar concepts are: *Behaviours* in FRP, *Properties* in bacon.js.
 
+You can add methods to `Signal`'s prototype. They will be available on all signals.
+
 
 #### signal.map
 
@@ -90,9 +92,9 @@ A signal which value you can set.
 Similar concepts are: *Bacon.Model* in bacon.js, *BehaviourSubject* in Rx.
 
 
-#### new Source
+#### source
 
-> new Source (initialValue : a, eq = egal : a -> a -> boolean) : Source a
+> source (initialValue : a, eq = egal : a -> a -> boolean) : Source a
 
 
 #### source.set
@@ -123,11 +125,18 @@ Applicative n-ary lift.
 One gathers atomic updates into single transaction (to avoid glitches).
 
 ```js
-var tx = new Transaction();
+var tx = menrva.transaction();
 sourceA.set(tx, 42);
 sourceB.set(tx, "foobar");
 tx.commit(); // not necessary, transactions are auto-commited
 ```
+
+
+#### transaction
+
+> transaction () : Transaction
+
+Create transaction.
 
 
 #### transaction.commit

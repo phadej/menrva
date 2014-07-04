@@ -88,7 +88,7 @@ Licensed under the MIT license.
 var egal = _dereq_("./egal.js");
 var option = _dereq_("./option.js");
 var signal = _dereq_("./signal.js");
-var Transaction = _dereq_("./transaction.js");
+var transaction = _dereq_("./transaction.js");
 
 
 module.exports = {
@@ -96,9 +96,9 @@ module.exports = {
   some: option.some,
   none: option.none,
   Signal: signal.Signal,
-  Source: signal.Source,
+  source: signal.source,
   combine: signal.combine,
-  Transaction: Transaction,
+  transaction: transaction,
 };
 
 },{"./egal.js":1,"./option.js":3,"./signal.js":4,"./transaction.js":5}],3:[function(_dereq_,module,exports){
@@ -225,6 +225,8 @@ var util = _dereq_("./util.js");
   The core type of menrva. `Signal` is abstract class, and cannot be created explicitly.
 
   Similar concepts are: *Behaviours* in FRP, *Properties* in bacon.js.
+
+  You can add methods to `Signal`'s prototype. They will be available on all signals.
 */
 function Signal() {}
 
@@ -304,12 +306,16 @@ Signal.prototype.onValue = function (callback) {
   Similar concepts are: *Bacon.Model* in bacon.js, *BehaviourSubject* in Rx.
 
 
-  #### new Source
+  #### source
 
-  > new Source (initialValue : a, eq = egal : a -> a -> boolean) : Source a
+  > source (initialValue : a, eq = egal : a -> a -> boolean) : Source a
 */
 function Source(initialValue, eq) {
   initSignal(this, initialValue, eq);
+}
+
+function source(initialValue, eq) {
+  return new Source(initialValue, eq);
 }
 
 Source.prototype = new Signal();
@@ -374,7 +380,7 @@ function combine() {
 
 module.exports = {
   Signal: Signal,
-  Source: Source,
+  source: source,
   combine: combine,
 };
 
@@ -397,7 +403,7 @@ var util = _dereq_("./util.js");
   One gathers atomic updates into single transaction (to avoid glitches).
 
   ```js
-  var tx = new Transaction();
+  var tx = menrva.transaction();
   sourceA.set(tx, 42);
   sourceB.set(tx, "foobar");
   tx.commit(); // not necessary, transactions are auto-commited
@@ -406,6 +412,17 @@ var util = _dereq_("./util.js");
 function Transaction() {
   this.actions = [];
   this.commitScheduled = false;
+}
+
+/**
+  #### transaction
+
+  > transaction () : Transaction
+
+  Create transaction.
+*/
+function transaction() {
+  return new Transaction();
 }
 
 /**
@@ -554,9 +571,9 @@ Transaction.prototype.rollback = function() {
 
 Transaction.prototype.deferCommit = function () {
   if (!this.commitScheduled) {
-    var transaction = this;
+    var tx = this;
     this.commitScheduled = setTimeout(function () {
-      transaction.commit();
+      tx.commit();
     });
   }
 };
@@ -566,7 +583,7 @@ Transaction.prototype.addAction = function (action) {
   this.deferCommit();
 };
 
-module.exports = Transaction;
+module.exports = transaction;
 
 },{"./util.js":6}],6:[function(_dereq_,module,exports){
 /*
