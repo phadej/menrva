@@ -159,6 +159,7 @@ Source.prototype.modify = function (transaction, f) {
   var $sum = menrva.combine($a, $b, function (a, b) {
     return a + b;
   });
+  ```
 */
 function combine() {
   var signals = Array.prototype.slice.call(arguments, 0, -1);

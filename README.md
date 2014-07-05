@@ -82,6 +82,7 @@ Applicative n-ary lift. Lift pure function to operate on signals:
 var $sum = menrva.combine($a, $b, function (a, b) {
   return a + b;
 });
+```
 
 
 
