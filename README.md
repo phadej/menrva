@@ -22,45 +22,6 @@ menrva.some('awe'); // some, as in awesome?
 ## API
 
 
-### Equalities
-
-#### egal
-
-> egal (a, b) : boolean
-
-Identity check. `Object.is`. http://wiki.ecmascript.org/doku.php?id=harmony:egal
-
-
-
-### Option
-
-Also known as `Maybe`.
-
-
-#### option.equals
-
-> equals (@ : option a, other : *, eq = eqal : a -> a -> boolean) : boolean
-
-Equality check.
-
-
-#### option.map
-
-> map (@ : option a, f : a -> b) : option b
-
-
-#### option.elim
-
-> elim (@ : option a, x : b, f : a -> b) : b
-
-
-
-#### option.orElse
-
-> orElse (@ : option a, x : a) : a
-
-
-
 ### Signal
 
 The core type of menrva. `Signal` is abstract class, and cannot be created explicitly.
@@ -153,6 +114,45 @@ Commit the transaction, forcing synchronous data propagation.
 Rollback the transaction. Maybe be called multiple times (consecutives calls are no-op).
 
 *Note: for now `rollback` only resets the pending actions in transactions. Transaction is still valid, and more actions can be added*
+
+
+
+### Equalities
+
+#### egal
+
+> egal (a, b) : boolean
+
+Identity check. `Object.is`. http://wiki.ecmascript.org/doku.php?id=harmony:egal
+
+
+
+### Option
+
+Also known as `Maybe`.
+
+
+#### option.equals
+
+> equals (@ : option a, other : *, eq = eqal : a -> a -> boolean) : boolean
+
+Equality check.
+
+
+#### option.map
+
+> map (@ : option a, f : a -> b) : option b
+
+
+#### option.elim
+
+> elim (@ : option a, x : b, f : a -> b) : b
+
+
+
+#### option.orElse
+
+> orElse (@ : option a, x : a) : a
 
 
 

@@ -30,10 +30,10 @@ menrva.some('awe'); // some, as in awesome?
 
 ## API
 */
-/// include egal.js
-/// include option.js
 /// include signal.js
 /// include transaction.js
+/// include egal.js
+/// include option.js
 /**
 ## Contributing
 */
