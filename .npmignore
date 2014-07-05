@@ -6,6 +6,7 @@ Makefile
 
 dist/
 coverage/
+benchmark/
 test/
 examples/
 docs/

@@ -33,6 +33,7 @@ test : jshint mocha istanbul typify
 
 jshint :
 	$(JSHINT) $(SRC)
+	$(JSHINT) benchmark
 	$(JSHINT) -c .jshintrc.examples examples
 
 mocha : 
