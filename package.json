@@ -38,7 +38,11 @@
     "ljs": "~0.2.3",
     "coveralls": "~2.11.0",
     "lodash": "~2.4.1",
-    "chai": "~1.9.1"
+    "chai": "~1.9.1",
+    "benchmark": "~1.0.0",
+    "rx": "~2.2.27",
+    "baconjs": "~0.7.16",
+    "bacon.model": "~0.1.10"
   },
   "keywords": [
     "data",
