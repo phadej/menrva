@@ -23,7 +23,7 @@ $(function () {
     } else {
       down.removeAttr("disabled");
     }
-  })
+  });
 
   function inc(x) {
     return x + 1;

@@ -1,6 +1,6 @@
 "use strict";
 
-var menrva = require("../lib/menrva.js");
+var menrva = require("../src/menrva.js");
 var assert = require("assert");
 var _ = require("lodash");
 var chai = require("chai");

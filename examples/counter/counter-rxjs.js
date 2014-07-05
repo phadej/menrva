@@ -10,8 +10,8 @@ $(function () {
   var downButton = $("#down");
   var counterEl = $("#counter");
 
-  var $up   = Rx.Observable.fromEvent(upButton[0], "click")
-  var $down = Rx.Observable.fromEvent(downButton[0], "click")
+  var $up   = Rx.Observable.fromEvent(upButton[0], "click");
+  var $down = Rx.Observable.fromEvent(downButton[0], "click");
 
   var $counter =
     // map up to 1, down to -1

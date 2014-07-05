@@ -44,7 +44,7 @@ $(function () {
   }
 
   $counter = Bacon.mergeAll($up.map(constant(inc)), $down.map(constant(dec)))
-    .scan(0, function (state, f) { return f(state); })
+    .scan(0, function (state, f) { return f(state); });
 
   /**
     ## Render

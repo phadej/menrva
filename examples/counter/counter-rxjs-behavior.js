@@ -22,8 +22,8 @@ $(function () {
     }
   });
 
-  var $up   = Rx.Observable.fromEvent(upButton[0], "click")
-  var $down = Rx.Observable.fromEvent(downButton[0], "click")
+  var $up   = Rx.Observable.fromEvent(upButton[0], "click");
+  var $down = Rx.Observable.fromEvent(downButton[0], "click");
 
   var $state =
     // map up to 1, down to -1

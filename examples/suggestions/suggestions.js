@@ -10,7 +10,7 @@ $(function () {
 
   /**
     ## Model
-  
+
     The global state of this small widget consists of four variables: list of users and three random variables.
 
     As *signals* always have a value, we initialize the list of users with an empty list.
@@ -53,28 +53,28 @@ $(function () {
   function renderSuggestion(suggestedUser, selector) {
     var suggestionEl = document.querySelector(selector);
     if (suggestedUser === undefined) {
-      suggestionEl.style.visibility = 'hidden';
+      suggestionEl.style.visibility = "hidden";
   } else {
-      suggestionEl.style.visibility = 'visible';
-      var usernameEl = suggestionEl.querySelector('.username');
-      usernameEl.href = suggestedUser.html_url;
-      usernameEl.textContent = suggestedUser.login;
-      var imgEl = suggestionEl.querySelector('img');
+      suggestionEl.style.visibility = "visible";
+      var usernameEl = suggestionEl.querySelector(".username");
+      usernameEl.href = suggestedUser["html_url"];
+      usernameEl.textContent = suggestedUser["login"];
+      var imgEl = suggestionEl.querySelector("img");
       imgEl.src = "";
-      imgEl.src = suggestedUser.avatar_url;
+      imgEl.src = suggestedUser["avatar_url"];
     }
   }
 
   $fstUser.onValue(function (user) {
-    renderSuggestion(user, '.suggestion1');
+    renderSuggestion(user, ".suggestion1");
   });
 
   $sndUser.onValue(function (user) {
-    renderSuggestion(user, '.suggestion2');
+    renderSuggestion(user, ".suggestion2");
   });
 
   $trdUser.onValue(function (user) {
-    renderSuggestion(user, '.suggestion3');
+    renderSuggestion(user, ".suggestion3");
   });
 
   /**
@@ -90,7 +90,7 @@ $(function () {
     There are two event types: refresh and close. On refresh we fetch new user list,
     and set the value of `$users`.
 
-    Here we use promises directly. 
+    Here we use promises directly.
 
     For handling one-to-one asynchronicity promises are very good abstraction.
     *menrva*, on the other hand, handles reactiviness.
@@ -109,7 +109,7 @@ $(function () {
     return function () {
       var tx = menrva.transaction();
       source.set(tx, Math.random());
-      tx.commit();      
+      tx.commit();
     };
   }
 
@@ -117,10 +117,10 @@ $(function () {
   refresh();
 
   // Event bindings
-  var refreshButton = $('.refresh');
-  var closeButton1 = $('.close1');
-  var closeButton2 = $('.close2');
-  var closeButton3 = $('.close3');
+  var refreshButton = $(".refresh");
+  var closeButton1 = $(".close1");
+  var closeButton2 = $(".close2");
+  var closeButton3 = $(".close3");
 
   refreshButton.click(refresh);
 

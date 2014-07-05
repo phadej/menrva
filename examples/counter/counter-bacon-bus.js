@@ -18,7 +18,7 @@ $(function () {
     } else {
       down.removeAttr("disabled");
     }
-  }); 
+  });
 
   var $up   = $("#up").asEventStream("click");
   var $down = $("#down").asEventStream("click");

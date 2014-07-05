@@ -21,7 +21,7 @@
       "url": "https://github.com/phadej/menrva/blob/master/LICENSE"
     }
   ],
-  "main": "lib/menrva",
+  "main": "src/menrva.js",
   "engines": {
     "node": ">= 0.10.0"
   },

@@ -1,12 +1,12 @@
 all : test
 
-SRC=lib/*.js
+SRC=src/*.js
 TESTSRC=test
 
 DISTDIR=dist
 DISTPREFIX=menrva
 
-BUNDLESRC=lib/menrva.js
+BUNDLESRC=src/menrva.js
 BUNDLEDST=$(DISTDIR)/$(DISTPREFIX).standalone.js
 BUNDLEVAR=menrva
 
@@ -14,7 +14,7 @@ MINSRC=$(BUNDLEDST)
 MINDST=$(DISTDIR)/$(DISTPREFIX).min.js
 MINMAP=$(DISTDIR)/$(DISTPREFIX).min.js.map
 
-LJSSRC=lib/menrva.js
+LJSSRC=src/menrva.js
 
 .PHONY : all test jshint mocha istanbul browserify typify literate dist
 
@@ -33,6 +33,7 @@ test : jshint mocha istanbul typify
 
 jshint :
 	$(JSHINT) $(SRC)
+	$(JSHINT) -c .jshintrc.examples examples
 
 mocha : 
 	$(MOCHA) --reporter=spec $(TESTSRC)

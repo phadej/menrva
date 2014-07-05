@@ -1,0 +1,24 @@
+{
+  "quotmark": "double",
+  "camelcase": true,
+  "shadow": "outer",
+  "trailing": true,
+  "curly": true,
+  "eqeqeq": true,
+  "immed": true,
+  "latedef": "nofunc",
+  "newcap": true,
+  "noarg": true,
+  "sub": true,
+  "undef": true,
+  "unused": "vars",
+  "boss": true,
+  "eqnull": true,
+  "browser": true,
+  "globals": {
+    "$": true,
+    "menrva": true,
+    "Bacon": true,
+    "Rx": true
+  }
+}
