@@ -56,7 +56,7 @@ literate :
 	$(LJS) -c false -o README.md $(LJSSRC)
 
 coveralls :
-	cat ./coverage/lcov.info | $(COVERALLS)
+	if [ ! -z `node --version | grep v0.10` ]; then cat ./coverage/lcov.info | $(COVERALLS); fi
 
 dist : test uglify literate
 	git clean -fdx -e node_modules
