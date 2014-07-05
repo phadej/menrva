@@ -16,7 +16,7 @@ MINMAP=$(DISTDIR)/$(DISTPREFIX).min.js.map
 
 LJSSRC=src/menrva.js
 
-.PHONY : all test jshint mocha istanbul browserify typify literate dist
+.PHONY : all test jshint mocha istanbul browserify typify literate version dist
 
 BINDIR=node_modules/.bin
 
@@ -60,5 +60,8 @@ literate :
 coveralls :
 	if [ ! -z `node --version | grep v0.10` ]; then cat ./coverage/lcov.info | $(COVERALLS); fi
 
-dist : test uglify literate
+version:
+	node scripts/version.js
+
+dist : test version uglify literate
 	git clean -fdx -e node_modules

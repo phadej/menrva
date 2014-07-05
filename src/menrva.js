@@ -57,6 +57,7 @@ var option = require("./option.js");
 var signal = require("./signal.js");
 var transaction = require("./transaction.js");
 
+var version = "0.0.3";
 
 module.exports = {
   egal: egal,
@@ -66,4 +67,5 @@ module.exports = {
   source: signal.source,
   combine: signal.combine,
   transaction: transaction,
+  version: version,
 };
