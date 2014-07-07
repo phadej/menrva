@@ -75,6 +75,36 @@ function calculateUpdates(actions) {
   return util.values(updates);
 }
 
+function initialSet(updates) {
+  var updated = [];
+  var len = updates.length;
+  for (var i = 0; i < len; i++) {
+    var update = updates[i];
+    // if different value
+    if (!update.signal.eq(update.signal.value, update.value)) {
+      // set it
+      update.signal.value = update.value;
+
+      // collect updated source signal
+      updated.push(update.signal);
+    }
+  }
+  return updated;
+}
+
+function triggerOnValue(updated) {
+  var len = updated.length;
+  for (var i = 0; i < len; i++) {
+    var updatedSignal = updated[i];
+    var value = updatedSignal.value;
+    var callbacks = updatedSignal.callbacks;
+    var callbacksLen = callbacks.length;
+    for (var j = 0; j < callbacksLen; j++) {
+      callbacks[j](value);
+    }
+  }
+}
+
 Transaction.prototype.commit = function () {
   // clear timeout
   if (this.commitScheduled) {
@@ -93,17 +123,7 @@ Transaction.prototype.commit = function () {
   var updates = calculateUpdates(this.actions);
 
   // Apply updates, and collect updated signals
-  var updated = [];
-  updates.forEach(function (update) {
-    // if different value
-    if (!update.signal.eq(update.signal.value, update.value)) {
-      // set it
-      update.signal.value = update.value;
-
-      // collect updated source signal
-      updated.push(update.signal);
-    }
-  });
+  var updated = initialSet(updates);
 
   // seed propagation push-pull propagation with children of updated sources
   var signals = [];
@@ -159,11 +179,7 @@ Transaction.prototype.commit = function () {
   }
 
   // Trigger onValue callbacks
-  updated.forEach(function (updatedSignal) {
-    updatedSignal.callbacks.forEach(function (callback) {
-      callback(updatedSignal.value);
-    });
-  });
+  triggerOnValue(updated);
 
   // rest cleanup
   this.actions = [];
