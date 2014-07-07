@@ -21,7 +21,16 @@ function pluck(arr, property) {
   return res;
 }
 
+function values(obj) {
+  var arr = [];
+  for (var k in obj) {
+    arr.push(obj[k]);
+  }
+  return arr;
+}
+
 module.exports = {
   identity: identity,
   pluck: pluck,
+  values: values,
 };
