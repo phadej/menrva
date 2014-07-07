@@ -9,3 +9,6 @@ coverage
 
 # metapos
 *.mpx
+
+# benchmark results
+benchmark/*.txt
