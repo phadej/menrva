@@ -57,7 +57,7 @@ var option = require("./option.js");
 var signal = require("./signal.js");
 var transaction = require("./transaction.js");
 
-var version = "0.0.3";
+var version = "0.0.4";
 
 module.exports = {
   egal: egal,

@@ -63,10 +63,10 @@ menrva.some('awe'); // some, as in awesome?
 
 ## API
 */
-/// include egal.js
-/// include option.js
 /// include signal.js
 /// include transaction.js
+/// include egal.js
+/// include option.js
 /**
 ## Contributing
 */
@@ -90,6 +90,7 @@ var option = _dereq_("./option.js");
 var signal = _dereq_("./signal.js");
 var transaction = _dereq_("./transaction.js");
 
+var version = "0.0.4";
 
 module.exports = {
   egal: egal,
@@ -99,6 +100,7 @@ module.exports = {
   source: signal.source,
   combine: signal.combine,
   transaction: transaction,
+  version: version,
 };
 
 },{"./egal.js":1,"./option.js":3,"./signal.js":4,"./transaction.js":5}],3:[function(_dereq_,module,exports){
@@ -230,12 +232,21 @@ var util = _dereq_("./util.js");
 */
 function Signal() {}
 
+// Each signal has an unique index.
+var index = 0;
+
 function initSignal(signal, value, eq) {
   signal.children = [];
   signal.callbacks = [];
   signal.value = value;
+
+  // `index` is used to implement faster sets of signals
+  signal.index = index++;
+
+  // `rank` is used to sort signals topologically
   signal.rank = signal.calculateRank();
-  // signal.refcount = 0;
+
+  // `eq` is an equality decision function on the signal values
   signal.eq = eq || egal;
 }
 
@@ -367,6 +378,7 @@ Source.prototype.modify = function (transaction, f) {
   var $sum = menrva.combine($a, $b, function (a, b) {
     return a + b;
   });
+  ```
 */
 function combine() {
   var signals = Array.prototype.slice.call(arguments, 0, -1);
@@ -434,6 +446,68 @@ function transaction() {
 
   Commit the transaction, forcing synchronous data propagation.
 */
+
+function calculateUpdates(actions) {
+  var updates = {};
+  var len = actions.length;
+  for (var i = 0; i < len; i++) {
+    var action = actions[i];
+    // find update fact for signal
+    var update = updates[action.signal.index];
+
+    // if not update found, create new for action's signal
+    if (!update) {
+      update = {
+        signal: action.signal,
+        value: action.signal.value,
+      };
+      updates[action.signal.index] = update;
+    }
+
+    // perform action
+    switch (action.type) {
+      case "set":
+        update.value = action.value;
+        break;
+      case "modify":
+        update.value = action.f(update.value);
+        break;
+    }
+  }
+
+  return util.values(updates);
+}
+
+function initialSet(updates) {
+  var updated = [];
+  var len = updates.length;
+  for (var i = 0; i < len; i++) {
+    var update = updates[i];
+    // if different value
+    if (!update.signal.eq(update.signal.value, update.value)) {
+      // set it
+      update.signal.value = update.value;
+
+      // collect updated source signal
+      updated.push(update.signal);
+    }
+  }
+  return updated;
+}
+
+function triggerOnValue(updated) {
+  var len = updated.length;
+  for (var i = 0; i < len; i++) {
+    var updatedSignal = updated[i];
+    var value = updatedSignal.value;
+    var callbacks = updatedSignal.callbacks;
+    var callbacksLen = callbacks.length;
+    for (var j = 0; j < callbacksLen; j++) {
+      callbacks[j](value);
+    }
+  }
+}
+
 Transaction.prototype.commit = function () {
   // clear timeout
   if (this.commitScheduled) {
@@ -449,70 +523,32 @@ Transaction.prototype.commit = function () {
   // Data flow
 
   // traverse actions to aquire new values
-  var updates = [];
-  this.actions.forEach(function (action) {
-    // find update fact for signal
-    var update;
-    var len = updates.length;
-    for (var i = 0; i < len; i++) {
-      if (action.signal === updates[i].signal) {
-        update = updates[i];
-        break;
-      }
-    }
-
-    // if not update found, create new for action's signal
-    if (!update) {
-      update = {
-        signal: action.signal,
-        value: action.signal.value,
-      };
-      updates.push(update);
-    }
-
-    // perform action
-    switch (action.type) {
-      case "set":
-        update.value = action.value;
-        break;
-      case "modify":
-        update.value = action.f(update.value);
-        break;
-    }
-  });
+  var updates = calculateUpdates(this.actions);
 
   // Apply updates, and collect updated signals
-  var updated = [];
-  updates.forEach(function (update) {
-    // if different value
-    if (!update.signal.eq(update.signal.value, update.value)) {
-      // set it
-      update.signal.value = update.value;
-
-      // collect updated source signal
-      updated.push(update.signal);
-    }
-  });
+  var updated = initialSet(updates);
 
   // seed propagation push-pull propagation with children of updated sources
-  var signals = [];
+  var signals = {};
   updated.forEach(function (update) {
     update.children.forEach(function (child) {
-      if (signals.indexOf(child) === -1) {
-        signals.push(child);
-      }
+      signals[child.index] = child;
     });
   });
 
   // until there aren't any signals
-  while (signals.length !== 0) {
-    var len = signals.length;
-
+  while (!util.objIsEmpty(signals)) {
     // minimum rank
-    var rank = Math.min.apply(Math, util.pluck(signals, "rank"));
+    var rank = Infinity;
+    for (var rankK in signals) {
+      rank = Math.min(rank, signals[rankK].rank);
+    }
 
-    for (var i = 0; i < len; i++) {
-      var signal = signals[i];
+    var next = [];
+    var curr = [];
+
+    for (var k in signals) {
+      var signal = signals[k];
       // skip signals of different (larger!) rank
       if (signal.rank !== rank) {
         continue;
@@ -531,30 +567,33 @@ Transaction.prototype.commit = function () {
 
         // add children of updated signal to list of traversable signals
         var childrenlen = signal.children.length;
-        for (var j = 0; j < childrenlen; j++) {
-          var child = signal.children[i];
-          if (signals.indexOf(child) === -1) {
-            signals.push(child);
-          }
+        for (var childIdx = 0; childIdx < childrenlen; childIdx++) {
+          var child = signal.children[childIdx];
+          next.push(child);
         }
       }
 
       // we are done with this signal
-      signals[i] = undefined;
+      curr.push(signal.index);
     }
 
-    // clear checked signals (undefined thus falsy)
-    signals = signals.filter(util.identity);
+    // Remove traversed
+    var currLen = curr.length;
+    for (var currIdx = 0; currIdx < currLen; currIdx++) {
+      delete signals[curr[currIdx]];
+    }
+
+    // add next
+    var nextLen = next.length;
+    for (var nextIdx = 0; nextIdx < nextLen; nextIdx++) {
+      signals[next[nextIdx].index] = next[nextIdx];
+    }
   }
 
   // Trigger onValue callbacks
-  updated.forEach(function (updatedSignal) {
-    updatedSignal.callbacks.forEach(function (callback) {
-      callback(updatedSignal.value);
-    });
-  });
+  triggerOnValue(updated);
 
-  // rest cleanup
+  // rest cleanupg
   this.actions = [];
 };
 
@@ -613,9 +652,27 @@ function pluck(arr, property) {
   return res;
 }
 
+function values(obj) {
+  var arr = [];
+  for (var k in obj) {
+    arr.push(obj[k]);
+  }
+  return arr;
+}
+
+function objIsEmpty(obj) {
+  /* jshint unused:false */
+  for (var k in obj) {
+    return false;
+  }
+  return true;
+}
+
 module.exports = {
   identity: identity,
   pluck: pluck,
+  values: values,
+  objIsEmpty: objIsEmpty,
 };
 
 },{}]},{},[2])
