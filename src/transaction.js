@@ -43,6 +43,38 @@ function transaction() {
 
   Commit the transaction, forcing synchronous data propagation.
 */
+
+function calculateUpdates(actions) {
+  var updates = {};
+  var len = actions.length;
+  for (var i = 0; i < len; i++) {
+    var action = actions[i];
+    // find update fact for signal
+    var update = updates[action.signal.index];
+
+    // if not update found, create new for action's signal
+    if (!update) {
+      update = {
+        signal: action.signal,
+        value: action.signal.value,
+      };
+      updates[action.signal.index] = update;
+    }
+
+    // perform action
+    switch (action.type) {
+      case "set":
+        update.value = action.value;
+        break;
+      case "modify":
+        update.value = action.f(update.value);
+        break;
+    }
+  }
+
+  return util.values(updates);
+}
+
 Transaction.prototype.commit = function () {
   // clear timeout
   if (this.commitScheduled) {
@@ -58,37 +90,7 @@ Transaction.prototype.commit = function () {
   // Data flow
 
   // traverse actions to aquire new values
-  var updates = [];
-  this.actions.forEach(function (action) {
-    // find update fact for signal
-    var update;
-    var len = updates.length;
-    for (var i = 0; i < len; i++) {
-      if (action.signal === updates[i].signal) {
-        update = updates[i];
-        break;
-      }
-    }
-
-    // if not update found, create new for action's signal
-    if (!update) {
-      update = {
-        signal: action.signal,
-        value: action.signal.value,
-      };
-      updates.push(update);
-    }
-
-    // perform action
-    switch (action.type) {
-      case "set":
-        update.value = action.value;
-        break;
-      case "modify":
-        update.value = action.f(update.value);
-        break;
-    }
-  });
+  var updates = calculateUpdates(this.actions);
 
   // Apply updates, and collect updated signals
   var updated = [];
