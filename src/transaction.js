@@ -126,24 +126,26 @@ Transaction.prototype.commit = function () {
   var updated = initialSet(updates);
 
   // seed propagation push-pull propagation with children of updated sources
-  var signals = [];
+  var signals = {};
   updated.forEach(function (update) {
     update.children.forEach(function (child) {
-      if (signals.indexOf(child) === -1) {
-        signals.push(child);
-      }
+      signals[child.index] = child;
     });
   });
 
   // until there aren't any signals
-  while (signals.length !== 0) {
-    var len = signals.length;
-
+  while (!util.objIsEmpty(signals)) {
     // minimum rank
-    var rank = Math.min.apply(Math, util.pluck(signals, "rank"));
+    var rank = Infinity;
+    for (var rankK in signals) {
+      rank = Math.min(rank, signals[rankK].rank);
+    }
 
-    for (var i = 0; i < len; i++) {
-      var signal = signals[i];
+    var next = [];
+    var curr = [];
+
+    for (var k in signals) {
+      var signal = signals[k];
       // skip signals of different (larger!) rank
       if (signal.rank !== rank) {
         continue;
@@ -162,26 +164,33 @@ Transaction.prototype.commit = function () {
 
         // add children of updated signal to list of traversable signals
         var childrenlen = signal.children.length;
-        for (var j = 0; j < childrenlen; j++) {
-          var child = signal.children[i];
-          if (signals.indexOf(child) === -1) {
-            signals.push(child);
-          }
+        for (var childIdx = 0; childIdx < childrenlen; childIdx++) {
+          var child = signal.children[childIdx];
+          next.push(child);
         }
       }
 
       // we are done with this signal
-      signals[i] = undefined;
+      curr.push(signal.index);
     }
 
-    // clear checked signals (undefined thus falsy)
-    signals = signals.filter(util.identity);
+    // Remove traversed
+    var currLen = curr.length;
+    for (var currIdx = 0; currIdx < currLen; currIdx++) {
+      delete signals[curr[currIdx]];
+    }
+
+    // add next
+    var nextLen = next.length;
+    for (var nextIdx = 0; nextIdx < nextLen; nextIdx++) {
+      signals[next[nextIdx].index] = next[nextIdx];
+    }
   }
 
   // Trigger onValue callbacks
   triggerOnValue(updated);
 
-  // rest cleanup
+  // rest cleanupg
   this.actions = [];
 };
 

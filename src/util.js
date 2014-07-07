@@ -29,8 +29,17 @@ function values(obj) {
   return arr;
 }
 
+function objIsEmpty(obj) {
+  /* jshint unused:false */
+  for (var k in obj) {
+    return false;
+  }
+  return true;
+}
+
 module.exports = {
   identity: identity,
   pluck: pluck,
   values: values,
+  objIsEmpty: objIsEmpty,
 };
