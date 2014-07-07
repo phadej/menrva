@@ -4,10 +4,13 @@ var Bacon = require("baconjs");
 var BaconModel = require("bacon.model");
 var Rx = require("rx");
 
+var quick = process.argv.indexOf("--quick") !== -1;
+
 var WIDTH = 3;
 var DEPTH = 5;
 
 var INITIAL_VALUE = 1;
+var SECOND_VALUE = 2;
 
 function inc(x) {
   return x + 1;
@@ -78,27 +81,36 @@ unsub = baconDiamond.onValue(function (x) {
   console.log("Bacon.js:             ", x);
 });
 baconBus.push(INITIAL_VALUE);
+baconBus.push(SECOND_VALUE);
 unsub();
 
 unsub = baconPropertyDiamond.onValue(function (x) {
   console.log("Bacon.js Bus→Property:", x);
 });
+baconPropertyBus.push(SECOND_VALUE);
 unsub();
 
 unsub = baconModelDiamond.onValue(function (x) {
   console.log("Bacon.js Model:       ", x);
 });
+baconModel.set(SECOND_VALUE);
 unsub();
 
 disposable = rxDiamond.subscribe(function (x) {
   console.log("Rx.JS Cold:           ", x);
 });
 rxSubject.onNext(INITIAL_VALUE);
+rxSubject.onNext(SECOND_VALUE);
 disposable.dispose();
 
 unsub = menrvaDiamond.onValue(function (x) {
   console.log("menrva:               ", x);
 });
+(function () {
+  var tx = menrva.transaction();
+  menrvaSource.set(tx, SECOND_VALUE);
+  tx.commit();
+}());
 unsub();
 
 // Add callack
@@ -109,8 +121,13 @@ rxDiamond.subscribe(function (x) {});
 menrvaDiamond.onValue(function (x) {});
 
 // Options
-Benchmark.options.maxTime = 10;
-Benchmark.options.minSamples = 200;
+if (quick) {
+  Benchmark.options.maxTime = 2;
+  Benchmark.options.minSamples = 20;
+} else {
+  Benchmark.options.maxTime = 10;
+  Benchmark.options.minSamples = 200;
+}
 
 // Suite
 var suite = new Benchmark.Suite();

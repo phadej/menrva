@@ -21,7 +21,25 @@ function pluck(arr, property) {
   return res;
 }
 
+function values(obj) {
+  var arr = [];
+  for (var k in obj) {
+    arr.push(obj[k]);
+  }
+  return arr;
+}
+
+function objIsEmpty(obj) {
+  /* jshint unused:false */
+  for (var k in obj) {
+    return false;
+  }
+  return true;
+}
+
 module.exports = {
   identity: identity,
   pluck: pluck,
+  values: values,
+  objIsEmpty: objIsEmpty,
 };

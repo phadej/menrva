@@ -22,12 +22,21 @@ var util = require("./util.js");
 */
 function Signal() {}
 
+// Each signal has an unique index.
+var index = 0;
+
 function initSignal(signal, value, eq) {
   signal.children = [];
   signal.callbacks = [];
   signal.value = value;
+
+  // `index` is used to implement faster sets of signals
+  signal.index = index++;
+
+  // `rank` is used to sort signals topologically
   signal.rank = signal.calculateRank();
-  // signal.refcount = 0;
+
+  // `eq` is an equality decision function on the signal values
   signal.eq = eq || egal;
 }
 
