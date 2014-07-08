@@ -186,6 +186,8 @@ function combine() {
 
 module.exports = {
   Signal: Signal,
+  Source: Source,
   source: source,
   combine: combine,
+  initSignal: initSignal,
 };
