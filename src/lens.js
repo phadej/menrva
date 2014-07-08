@@ -21,7 +21,7 @@ function Lens(parent, path, eq) {
   this.parents = [parent];
   this.path = path.split(/\./);
   var value = this.calculate();
-  signal.initSignal(this, value, eq);    
+  signal.initSignal(this, value, eq);
 }
 
 Lens.prototype = new signal.Signal();
@@ -45,7 +45,7 @@ Lens.prototype.calculate = function () {
   ```js
   var quux = source.zoom("foo.bar.quux");
   ```
-*/ 
+*/
 signal.Source.prototype.zoom = Lens.prototype.zoom = function(f, eq) {
   var mapped = new Lens(this, f, eq);
   this.children.push(mapped);
