@@ -1,3 +1,4 @@
+- **0.0.5** Lens
 - **0.0.4** Internal improvements
 - **0.0.3** Slight changes in API
 - **0.0.2** Basic data-flow functionality

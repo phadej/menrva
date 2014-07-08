@@ -62,7 +62,7 @@ var transaction = require("./transaction.js");
 require("./lens.js");
 
 // version
-var version = "0.0.4";
+var version = "0.0.5";
 
 module.exports = {
   egal: egal,

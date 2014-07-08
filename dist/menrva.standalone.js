@@ -39,6 +39,75 @@ module.exports = egal;
  * Licensed under the MIT license.
  */
 
+"use strict";
+
+var util = _dereq_("./util.js");
+var signal = _dereq_("./signal.js");
+
+/**
+  ### Lens
+
+  Lenses are composable functional references.
+  They allow you to *access* and *modify* data potentially very deep within a structure!
+*/
+function Lens(parent, path, eq) {
+  this.parents = [parent];
+  this.path = path.split(/\./);
+  var value = this.calculate();
+  signal.initSignal(this, value, eq);    
+}
+
+Lens.prototype = new signal.Signal();
+
+Lens.prototype.calculateRank = function () {
+  return this.parents[0].rank + 1;
+};
+
+Lens.prototype.calculate = function () {
+  return util.getPath(this.parents[0].value, this.path);
+};
+
+/**
+  #### source.zoom
+
+  > zoom (@ : Source a, path : Path a b, eq = egal : b -> b -> boolean) : Source b
+
+  Zoom (or focus) into part specified by `path` of the original signal.
+  One can `set` and `modify` zoomed signals, they act as sources.
+
+  ```js
+  var quux = source.zoom("foo.bar.quux");
+  ```
+*/ 
+signal.Source.prototype.zoom = Lens.prototype.zoom = function(f, eq) {
+  var mapped = new Lens(this, f, eq);
+  this.children.push(mapped);
+  return mapped;
+};
+
+Lens.prototype.set = function (tx, value) {
+  var path = this.path;
+  this.parents[0].modify(tx, function (obj) {
+    return util.setPath(obj, path, value);
+  });
+};
+
+Lens.prototype.modify = function (tx, f) {
+  var path = this.path;
+  this.parents[0].modify(tx, function (obj) {
+    return util.modifyPath(obj, path, f);
+  });
+};
+
+},{"./signal.js":5,"./util.js":7}],3:[function(_dereq_,module,exports){
+/*
+ * menrva
+ * https://github.com/phadej/menrva
+ *
+ * Copyright (c) 2014 Oleg Grenrus
+ * Licensed under the MIT license.
+ */
+
 /**
 # menrva
 
@@ -65,6 +134,7 @@ menrva.some('awe'); // some, as in awesome?
 */
 /// include signal.js
 /// include transaction.js
+/// include lens.js
 /// include egal.js
 /// include option.js
 /**
@@ -90,7 +160,11 @@ var option = _dereq_("./option.js");
 var signal = _dereq_("./signal.js");
 var transaction = _dereq_("./transaction.js");
 
-var version = "0.0.4";
+// extensions
+_dereq_("./lens.js");
+
+// version
+var version = "0.0.5";
 
 module.exports = {
   egal: egal,
@@ -103,7 +177,7 @@ module.exports = {
   version: version,
 };
 
-},{"./egal.js":1,"./option.js":3,"./signal.js":4,"./transaction.js":5}],3:[function(_dereq_,module,exports){
+},{"./egal.js":1,"./lens.js":2,"./option.js":4,"./signal.js":5,"./transaction.js":6}],4:[function(_dereq_,module,exports){
 /*
  * menrva
  * https://github.com/phadej/menrva
@@ -207,7 +281,7 @@ module.exports = {
   none: none,
 };
 
-},{"./egal.js":1,"./util.js":6}],4:[function(_dereq_,module,exports){
+},{"./egal.js":1,"./util.js":7}],5:[function(_dereq_,module,exports){
 /*
  * menrva
  * https://github.com/phadej/menrva
@@ -396,11 +470,13 @@ function combine() {
 
 module.exports = {
   Signal: Signal,
+  Source: Source,
   source: source,
   combine: combine,
+  initSignal: initSignal,
 };
 
-},{"./egal.js":1,"./util.js":6}],5:[function(_dereq_,module,exports){
+},{"./egal.js":1,"./util.js":7}],6:[function(_dereq_,module,exports){
 /*
  * menrva
  * https://github.com/phadej/menrva
@@ -628,7 +704,7 @@ Transaction.prototype.addAction = function (action) {
 
 module.exports = transaction;
 
-},{"./util.js":6}],6:[function(_dereq_,module,exports){
+},{"./util.js":7}],7:[function(_dereq_,module,exports){
 /*
  * menrva
  * https://github.com/phadej/menrva
@@ -668,13 +744,51 @@ function objIsEmpty(obj) {
   return true;
 }
 
+function getPath(obj, path) {
+  var len = path.length;
+  for (var i = 0; i < len; i++) {
+    if (obj === undefined || obj === null) {
+      return obj;
+    } else {
+      obj = obj[path[i]];
+    }
+  }
+  return obj;
+}
+
+function setProperty(obj, property, value) {
+  var copy = {};
+  for (var k in obj) {
+    copy[k] = obj[k];
+  }
+  copy[property] = value;
+  return copy;
+}
+
+function setPath(obj, path, value) {
+  var len = path.length;
+  var acc = value;
+  for (var i = len; i > 0; i--) {
+    var next = getPath(obj, path.slice(0, i - 1));
+    acc = setProperty(next, path[i - 1], acc);
+  }
+  return acc;
+}
+
+function modifyPath(obj, path, f) {
+  return setPath(obj, path, f(getPath(obj, path)));
+}
+
 module.exports = {
   identity: identity,
   pluck: pluck,
   values: values,
   objIsEmpty: objIsEmpty,
+  getPath: getPath,
+  setPath: setPath,
+  modifyPath: modifyPath,
 };
 
-},{}]},{},[2])
-(2)
+},{}]},{},[3])
+(3)
 });
