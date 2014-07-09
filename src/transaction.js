@@ -18,8 +18,20 @@ var util = require("./util.js");
   ```js
   var tx = menrva.transaction();
   sourceA.set(tx, 42);
-  sourceB.set(tx, "foobar");
+  sourceB.modify(tx, function (x) { return x + x; });
   tx.commit(); // not necessary, transactions are auto-commited
+  ```
+
+  There are also optional syntaxes for simple transactions:
+  ```js
+  menrva.transaction()
+    .set(sourceA, 42)
+    .modify(sourceB, function (x) { return x + x; })
+    .commit();
+  ```
+  or even
+  ```js
+  menrva.transaction([sourceA, 42, sourceB, functin(x) { return x + x; }]).commit();
   ```
 */
 function Transaction() {
@@ -30,12 +42,33 @@ function Transaction() {
 /**
   #### transaction
 
-  > transaction () : Transaction
+  > transaction (facts) : Transaction
 
   Create transaction.
+
+  Shorthand syntax:
+
+  > transaction ([sourceA, valueA, sourceB, valueB ...]) : Transaction
+
+  If `value` is function, `source.modify(tx, value)` is called; otherwise `source.set(tx, value)`.
 */
-function transaction() {
-  return new Transaction();
+function transaction(facts) {
+  var tx = new Transaction();
+
+  if (Array.isArray(facts)) {
+    var len = facts.length;
+    for (var i = 0; i < len; i += 2) {
+      var source = facts[i];
+      var value = facts[i + 1];
+      if (typeof value === "function") {
+        source.modify(tx, value);
+      } else {
+        source.set(tx, value);
+      }
+    }
+  }
+
+  return tx;
 }
 
 /**
@@ -221,6 +254,16 @@ Transaction.prototype.deferCommit = function () {
 Transaction.prototype.addAction = function (action) {
   this.actions.push(action);
   this.deferCommit();
+};
+
+Transaction.prototype.set = function (source, value) {
+  source.set(this, value);
+  return this;
+};
+
+Transaction.prototype.modify = function (source, f) {
+  source.modify(this, f);
+  return this;
 };
 
 module.exports = transaction;
