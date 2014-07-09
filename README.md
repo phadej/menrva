@@ -164,6 +164,20 @@ var quux = source.zoom("foo.bar.quux");
 Essentially `signal.onValue(console.log.bind(console, args...))
 
 
+#### signal.onSpread
+
+> signal.onSpread (@ : Signal [a, b...], callback : a -> b ... -> void) : Unsubscriber
+
+`onValue` with signal's tuple arguments spread.
+
+
+#### tuple
+
+> tuple (x : Signal a, y : Signal b...) : Signal [a, b...]
+
+Combine signals into tuple.
+
+
 
 ### Equalities
 

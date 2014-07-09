@@ -9,6 +9,69 @@
 
 "use strict";
 
+var signal = _dereq_("./signal.js");
+/**
+  ### Convinience methods
+
+  #### signal.log
+
+  > signal.log (@ : Signal a, args...) : Unsubscriber
+
+  Essentially `signal.onValue(console.log.bind(console, args...))
+*/
+signal.Signal.prototype.log = function () {
+  var args = Array.prototype.slice.call(arguments);
+  return this.onValue(function (x) {
+    var logArgs = args.concat([x]);
+    console.log.apply(console, logArgs);
+  });
+};
+
+/**
+  #### signal.onSpread
+
+  > signal.onSpread (@ : Signal [a, b...], callback : a -> b ... -> void) : Unsubscriber
+
+  `onValue` with signal's tuple arguments spread.
+*/
+signal.Signal.prototype.onSpread = function (callback) {
+  return this.onValue(function (t) {
+    callback.apply(undefined, t);
+  });
+};
+
+/**
+  #### tuple
+
+  > tuple (x : Signal a, y : Signal b...) : Signal [a, b...]
+
+  Combine signals into tuple.
+*/
+function argsToArray() {
+  return Array.prototype.slice.call(arguments);
+}
+
+function tuple() {
+  var signals = Array.prototype.slice.call(arguments);
+  var args = signals.concat([argsToArray]);
+  return signal.combine.apply(signal, args);
+}
+
+module.exports = {
+  tuple: tuple,
+};
+
+},{"./signal.js":6}],2:[function(_dereq_,module,exports){
+/*
+ * menrva
+ * https://github.com/phadej/menrva
+ *
+ * Copyright (c) 2014 Oleg Grenrus
+ * Licensed under the MIT license.
+ */
+
+"use strict";
+
 /**
 	### Equalities
 
@@ -30,7 +93,7 @@ function egal(a, b) {
 
 module.exports = egal;
 
-},{}],2:[function(_dereq_,module,exports){
+},{}],3:[function(_dereq_,module,exports){
 /*
  * menrva
  * https://github.com/phadej/menrva
@@ -54,7 +117,7 @@ function Lens(parent, path, eq) {
   this.parents = [parent];
   this.path = path.split(/\./);
   var value = this.calculate();
-  signal.initSignal(this, value, eq);    
+  signal.initSignal(this, value, eq);
 }
 
 Lens.prototype = new signal.Signal();
@@ -78,7 +141,7 @@ Lens.prototype.calculate = function () {
   ```js
   var quux = source.zoom("foo.bar.quux");
   ```
-*/ 
+*/
 signal.Source.prototype.zoom = Lens.prototype.zoom = function(f, eq) {
   var mapped = new Lens(this, f, eq);
   this.children.push(mapped);
@@ -99,7 +162,7 @@ Lens.prototype.modify = function (tx, f) {
   });
 };
 
-},{"./signal.js":5,"./util.js":7}],3:[function(_dereq_,module,exports){
+},{"./signal.js":6,"./util.js":8}],4:[function(_dereq_,module,exports){
 /*
  * menrva
  * https://github.com/phadej/menrva
@@ -135,6 +198,7 @@ menrva.some('awe'); // some, as in awesome?
 /// include signal.js
 /// include transaction.js
 /// include lens.js
+/// include convinience.js
 /// include egal.js
 /// include option.js
 /**
@@ -162,6 +226,7 @@ var transaction = _dereq_("./transaction.js");
 
 // extensions
 _dereq_("./lens.js");
+var convinience = _dereq_("./convinience.js");
 
 // version
 var version = "0.0.5";
@@ -173,11 +238,12 @@ module.exports = {
   Signal: signal.Signal,
   source: signal.source,
   combine: signal.combine,
+  tuple: convinience.tuple,
   transaction: transaction,
   version: version,
 };
 
-},{"./egal.js":1,"./lens.js":2,"./option.js":4,"./signal.js":5,"./transaction.js":6}],4:[function(_dereq_,module,exports){
+},{"./convinience.js":1,"./egal.js":2,"./lens.js":3,"./option.js":5,"./signal.js":6,"./transaction.js":7}],5:[function(_dereq_,module,exports){
 /*
  * menrva
  * https://github.com/phadej/menrva
@@ -281,7 +347,7 @@ module.exports = {
   none: none,
 };
 
-},{"./egal.js":1,"./util.js":7}],5:[function(_dereq_,module,exports){
+},{"./egal.js":2,"./util.js":8}],6:[function(_dereq_,module,exports){
 /*
  * menrva
  * https://github.com/phadej/menrva
@@ -356,7 +422,7 @@ Signal.prototype.map = function(f, eq) {
 /**
   #### signal.onValue
 
-  > onValue (@ : Singal a, callback : a -> void) -> Unsubscriber
+  > onValue (@ : Signal a, callback : a -> void) -> Unsubscriber
 
   Add value callback. `callback` is immediately executed with the current value of signal.
   After than `callback` will be called, each time signal's value changes.
@@ -476,7 +542,7 @@ module.exports = {
   initSignal: initSignal,
 };
 
-},{"./egal.js":1,"./util.js":7}],6:[function(_dereq_,module,exports){
+},{"./egal.js":2,"./util.js":8}],7:[function(_dereq_,module,exports){
 /*
  * menrva
  * https://github.com/phadej/menrva
@@ -497,8 +563,20 @@ var util = _dereq_("./util.js");
   ```js
   var tx = menrva.transaction();
   sourceA.set(tx, 42);
-  sourceB.set(tx, "foobar");
+  sourceB.modify(tx, function (x) { return x + x; });
   tx.commit(); // not necessary, transactions are auto-commited
+  ```
+
+  There are also optional syntaxes for simple transactions:
+  ```js
+  menrva.transaction()
+    .set(sourceA, 42)
+    .modify(sourceB, function (x) { return x + x; })
+    .commit();
+  ```
+  or even
+  ```js
+  menrva.transaction([sourceA, 42, sourceB, function(x) { return x + x; }]).commit();
   ```
 */
 function Transaction() {
@@ -509,12 +587,33 @@ function Transaction() {
 /**
   #### transaction
 
-  > transaction () : Transaction
+  > transaction (facts) : Transaction
 
   Create transaction.
+
+  Shorthand syntax:
+
+  > transaction ([sourceA, valueA, sourceB, valueB ...]) : Transaction
+
+  If `value` is function, `source.modify(tx, value)` is called; otherwise `source.set(tx, value)`.
 */
-function transaction() {
-  return new Transaction();
+function transaction(facts) {
+  var tx = new Transaction();
+
+  if (Array.isArray(facts)) {
+    var len = facts.length;
+    for (var i = 0; i < len; i += 2) {
+      var source = facts[i];
+      var value = facts[i + 1];
+      if (typeof value === "function") {
+        source.modify(tx, value);
+      } else {
+        source.set(tx, value);
+      }
+    }
+  }
+
+  return tx;
 }
 
 /**
@@ -702,9 +801,19 @@ Transaction.prototype.addAction = function (action) {
   this.deferCommit();
 };
 
+Transaction.prototype.set = function (source, value) {
+  source.set(this, value);
+  return this;
+};
+
+Transaction.prototype.modify = function (source, f) {
+  source.modify(this, f);
+  return this;
+};
+
 module.exports = transaction;
 
-},{"./util.js":7}],7:[function(_dereq_,module,exports){
+},{"./util.js":8}],8:[function(_dereq_,module,exports){
 /*
  * menrva
  * https://github.com/phadej/menrva
@@ -789,6 +898,6 @@ module.exports = {
   modifyPath: modifyPath,
 };
 
-},{}]},{},[3])
-(3)
+},{}]},{},[4])
+(4)
 });
