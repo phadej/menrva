@@ -33,7 +33,7 @@ menrva.some('awe'); // some, as in awesome?
 /// include signal.js
 /// include transaction.js
 /// include lens.js
-/// include convinience.js
+/// include convenience.js
 /// include egal.js
 /// include option.js
 /**
@@ -61,7 +61,7 @@ var transaction = require("./transaction.js");
 
 // extensions
 require("./lens.js");
-var convinience = require("./convinience.js");
+var convenience = require("./convenience.js");
 
 // version
 var version = "0.0.6";
@@ -73,7 +73,7 @@ module.exports = {
   Signal: signal.Signal,
   source: signal.source,
   combine: signal.combine,
-  tuple: convinience.tuple,
+  tuple: convenience.tuple,
   transaction: transaction,
   version: version,
 };

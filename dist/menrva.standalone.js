@@ -198,7 +198,7 @@ menrva.some('awe'); // some, as in awesome?
 /// include signal.js
 /// include transaction.js
 /// include lens.js
-/// include convinience.js
+/// include convenience.js
 /// include egal.js
 /// include option.js
 /**
@@ -226,7 +226,7 @@ var transaction = _dereq_("./transaction.js");
 
 // extensions
 _dereq_("./lens.js");
-var convinience = _dereq_("./convinience.js");
+var convenience = _dereq_("./convenience.js");
 
 // version
 var version = "0.0.6";
@@ -238,12 +238,12 @@ module.exports = {
   Signal: signal.Signal,
   source: signal.source,
   combine: signal.combine,
-  tuple: convinience.tuple,
+  tuple: convenience.tuple,
   transaction: transaction,
   version: version,
 };
 
-},{"./convinience.js":1,"./egal.js":2,"./lens.js":3,"./option.js":5,"./signal.js":6,"./transaction.js":7}],5:[function(_dereq_,module,exports){
+},{"./convenience.js":1,"./egal.js":2,"./lens.js":3,"./option.js":5,"./signal.js":6,"./transaction.js":7}],5:[function(_dereq_,module,exports){
 /*
  * menrva
  * https://github.com/phadej/menrva
