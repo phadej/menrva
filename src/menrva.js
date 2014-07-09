@@ -61,7 +61,7 @@ var transaction = require("./transaction.js");
 
 // extensions
 require("./lens.js");
-require("./convinience.js");
+var convinience = require("./convinience.js");
 
 // version
 var version = "0.0.5";
@@ -73,6 +73,7 @@ module.exports = {
   Signal: signal.Signal,
   source: signal.source,
   combine: signal.combine,
+  tuple: convinience.tuple,
   transaction: transaction,
   version: version,
 };
