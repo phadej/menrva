@@ -19,6 +19,7 @@
     "$": true,
     "menrva": true,
     "Bacon": true,
-    "Rx": true
+    "Rx": true,
+    "_": true
   }
 }
