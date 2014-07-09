@@ -229,7 +229,7 @@ _dereq_("./lens.js");
 var convinience = _dereq_("./convinience.js");
 
 // version
-var version = "0.0.5";
+var version = "0.0.6";
 
 module.exports = {
   egal: egal,

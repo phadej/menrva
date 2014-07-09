@@ -64,7 +64,7 @@ require("./lens.js");
 var convinience = require("./convinience.js");
 
 // version
-var version = "0.0.5";
+var version = "0.0.6";
 
 module.exports = {
   egal: egal,
