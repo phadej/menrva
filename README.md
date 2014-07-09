@@ -38,7 +38,7 @@ You can add methods to `Signal`'s prototype. They will be available on all signa
 
 #### signal.onValue
 
-> onValue (@ : Singal a, callback : a -> void) -> Unsubscriber
+> onValue (@ : Signal a, callback : a -> void) -> Unsubscriber
 
 Add value callback. `callback` is immediately executed with the current value of signal.
 After than `callback` will be called, each time signal's value changes.
@@ -93,16 +93,34 @@ One gathers atomic updates into single transaction (to avoid glitches).
 ```js
 var tx = menrva.transaction();
 sourceA.set(tx, 42);
-sourceB.set(tx, "foobar");
+sourceB.modify(tx, function (x) { return x + x; });
 tx.commit(); // not necessary, transactions are auto-commited
+```
+
+There are also optional syntaxes for simple transactions:
+```js
+menrva.transaction()
+  .set(sourceA, 42)
+  .modify(sourceB, function (x) { return x + x; })
+  .commit();
+```
+or even
+```js
+menrva.transaction([sourceA, 42, sourceB, functin(x) { return x + x; }]).commit();
 ```
 
 
 #### transaction
 
-> transaction () : Transaction
+> transaction (facts) : Transaction
 
 Create transaction.
+
+Shorthand syntax:
+
+> transaction ([sourceA, valueA, sourceB, valueB ...]) : Transaction
+
+If `value` is function, `source.modify(tx, value)` is called; otherwise `source.set(tx, value)`.
 
 
 #### transaction.commit
@@ -134,6 +152,16 @@ One can `set` and `modify` zoomed signals, they act as sources.
 ```js
 var quux = source.zoom("foo.bar.quux");
 ```
+
+
+
+### Convinience methods
+
+#### signal.log
+
+> signal.log (@ : Signal a, args...) : Unsubscriber
+
+Essentially `signal.onValue(console.log.bind(console, args...))
 
 
 

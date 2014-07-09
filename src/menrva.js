@@ -33,7 +33,7 @@ menrva.some('awe'); // some, as in awesome?
 /// include signal.js
 /// include transaction.js
 /// include lens.js
-/// include convenience.js
+/// include convinience.js
 /// include egal.js
 /// include option.js
 /**
