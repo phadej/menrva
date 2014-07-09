@@ -106,7 +106,7 @@ menrva.transaction()
 ```
 or even
 ```js
-menrva.transaction([sourceA, 42, sourceB, functin(x) { return x + x; }]).commit();
+menrva.transaction([sourceA, 42, sourceB, function(x) { return x + x; }]).commit();
 ```
 
 
