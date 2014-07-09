@@ -33,6 +33,7 @@ menrva.some('awe'); // some, as in awesome?
 /// include signal.js
 /// include transaction.js
 /// include lens.js
+/// include convenience.js
 /// include egal.js
 /// include option.js
 /**
@@ -60,6 +61,7 @@ var transaction = require("./transaction.js");
 
 // extensions
 require("./lens.js");
+require("./convinience.js");
 
 // version
 var version = "0.0.5";
