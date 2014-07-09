@@ -72,7 +72,7 @@ Signal.prototype.map = function(f, eq) {
 /**
   #### signal.onValue
 
-  > onValue (@ : Singal a, callback : a -> void) -> Unsubscriber
+  > onValue (@ : Signal a, callback : a -> void) -> Unsubscriber
 
   Add value callback. `callback` is immediately executed with the current value of signal.
   After than `callback` will be called, each time signal's value changes.
