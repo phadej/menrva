@@ -243,4 +243,53 @@ describe("transaction - a + b + c", function () {
       chai.expect(countE).to.equal(1);
     });
   });
+
+  describe("syntax", function () {
+    var a, b;
+
+    function double(x) {
+      return x + x;
+    }
+
+    beforeEach(function () {
+      a = menrva.source(1);
+      b = menrva.source(2);
+    });
+
+    it("imperative", function () {
+      chai.expect(a.value).to.equal(1);
+      chai.expect(b.value).to.equal(2);
+
+      var tx = menrva.transaction();
+      a.set(tx, 42);
+      b.modify(tx, double);
+      tx.commit();
+
+      chai.expect(a.value).to.equal(42);
+      chai.expect(b.value).to.equal(4);
+    });
+
+    it("chain", function () {
+      chai.expect(a.value).to.equal(1);
+      chai.expect(b.value).to.equal(2);
+
+      menrva.transaction()
+        .set(a, 42)
+        .modify(b, double)
+        .commit();
+
+      chai.expect(a.value).to.equal(42);
+      chai.expect(b.value).to.equal(4);
+    });
+
+    it("short", function () {
+      chai.expect(a.value).to.equal(1);
+      chai.expect(b.value).to.equal(2);
+
+      menrva.transaction([a, 42, b, double]).commit();
+
+      chai.expect(a.value).to.equal(42);
+      chai.expect(b.value).to.equal(4);
+    });
+  });
 });
