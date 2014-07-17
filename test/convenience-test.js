@@ -6,7 +6,7 @@ var _ = require("lodash");
 var chai = require("chai");
 var sinon = require("sinon");
 
-describe("convinience features", function () {
+describe("convenience features", function () {
   describe("log", function () {
     beforeEach(function () {
       sinon.stub(console, "log");

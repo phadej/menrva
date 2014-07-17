@@ -10,7 +10,7 @@
 
 var signal = require("./signal.js");
 /**
-  ### Convinience methods
+  ### Convenience methods
 
   #### signal.log
 
