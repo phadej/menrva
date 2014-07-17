@@ -155,7 +155,7 @@ var quux = source.zoom("foo.bar.quux");
 
 
 
-### Convinience methods
+### Convenience methods
 
 #### signal.log
 
