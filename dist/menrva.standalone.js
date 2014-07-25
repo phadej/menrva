@@ -1,4 +1,4 @@
-!function(e){if("object"==typeof exports&&"undefined"!=typeof module)module.exports=e();else if("function"==typeof define&&define.amd)define([],e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.menrva=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){
+!function(e){if("object"==typeof exports&&"undefined"!=typeof module)module.exports=e();else if("function"==typeof define&&define.amd)define([],e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.menrva=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 /*
  * menrva
  * https://github.com/phadej/menrva
@@ -9,9 +9,9 @@
 
 "use strict";
 
-var signal = _dereq_("./signal.js");
+var signal = require("./signal.js");
 /**
-  ### Convinience methods
+  ### Convenience methods
 
   #### signal.log
 
@@ -61,7 +61,7 @@ module.exports = {
   tuple: tuple,
 };
 
-},{"./signal.js":6}],2:[function(_dereq_,module,exports){
+},{"./signal.js":6}],2:[function(require,module,exports){
 /*
  * menrva
  * https://github.com/phadej/menrva
@@ -93,7 +93,7 @@ function egal(a, b) {
 
 module.exports = egal;
 
-},{}],3:[function(_dereq_,module,exports){
+},{}],3:[function(require,module,exports){
 /*
  * menrva
  * https://github.com/phadej/menrva
@@ -104,8 +104,8 @@ module.exports = egal;
 
 "use strict";
 
-var util = _dereq_("./util.js");
-var signal = _dereq_("./signal.js");
+var util = require("./util.js");
+var signal = require("./signal.js");
 
 /**
   ### Lens
@@ -162,7 +162,7 @@ Lens.prototype.modify = function (tx, f) {
   });
 };
 
-},{"./signal.js":6,"./util.js":8}],4:[function(_dereq_,module,exports){
+},{"./signal.js":6,"./util.js":8}],4:[function(require,module,exports){
 /*
  * menrva
  * https://github.com/phadej/menrva
@@ -219,14 +219,14 @@ Licensed under the MIT license.
 
 "use strict";
 
-var egal = _dereq_("./egal.js");
-var option = _dereq_("./option.js");
-var signal = _dereq_("./signal.js");
-var transaction = _dereq_("./transaction.js");
+var egal = require("./egal.js");
+var option = require("./option.js");
+var signal = require("./signal.js");
+var transaction = require("./transaction.js");
 
 // extensions
-_dereq_("./lens.js");
-var convenience = _dereq_("./convenience.js");
+require("./lens.js");
+var convenience = require("./convenience.js");
 
 // version
 var version = "0.0.6";
@@ -243,7 +243,7 @@ module.exports = {
   version: version,
 };
 
-},{"./convenience.js":1,"./egal.js":2,"./lens.js":3,"./option.js":5,"./signal.js":6,"./transaction.js":7}],5:[function(_dereq_,module,exports){
+},{"./convenience.js":1,"./egal.js":2,"./lens.js":3,"./option.js":5,"./signal.js":6,"./transaction.js":7}],5:[function(require,module,exports){
 /*
  * menrva
  * https://github.com/phadej/menrva
@@ -254,8 +254,8 @@ module.exports = {
 
 "use strict";
 
-var egal = _dereq_("./egal.js");
-var util = _dereq_("./util.js");
+var egal = require("./egal.js");
+var util = require("./util.js");
 
 // typify: instance Option
 // Option type
@@ -347,7 +347,7 @@ module.exports = {
   none: none,
 };
 
-},{"./egal.js":2,"./util.js":8}],6:[function(_dereq_,module,exports){
+},{"./egal.js":2,"./util.js":8}],6:[function(require,module,exports){
 /*
  * menrva
  * https://github.com/phadej/menrva
@@ -358,8 +358,8 @@ module.exports = {
 
 "use strict";
 
-var egal = _dereq_("./egal.js");
-var util = _dereq_("./util.js");
+var egal = require("./egal.js");
+var util = require("./util.js");
 
 /**
   ### Signal
@@ -542,7 +542,7 @@ module.exports = {
   initSignal: initSignal,
 };
 
-},{"./egal.js":2,"./util.js":8}],7:[function(_dereq_,module,exports){
+},{"./egal.js":2,"./util.js":8}],7:[function(require,module,exports){
 /*
  * menrva
  * https://github.com/phadej/menrva
@@ -553,7 +553,7 @@ module.exports = {
 
 "use strict";
 
-var util = _dereq_("./util.js");
+var util = require("./util.js");
 
 /**
   ### Transaction
@@ -813,7 +813,7 @@ Transaction.prototype.modify = function (source, f) {
 
 module.exports = transaction;
 
-},{"./util.js":8}],8:[function(_dereq_,module,exports){
+},{"./util.js":8}],8:[function(require,module,exports){
 /*
  * menrva
  * https://github.com/phadej/menrva
@@ -898,6 +898,5 @@ module.exports = {
   modifyPath: modifyPath,
 };
 
-},{}]},{},[4])
-(4)
+},{}]},{},[4])(4)
 });
