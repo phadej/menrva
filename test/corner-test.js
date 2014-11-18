@@ -18,7 +18,7 @@ describe("corner cases", function () {
       onValueCount += 1;
     })
 
-    chai.expect(b.value).to.equal(3);
+    chai.expect(b.value()).to.equal(3);
     chai.expect(combineCount).to.equal(1);
     chai.expect(onValueCount).to.equal(1);
 
@@ -26,7 +26,7 @@ describe("corner cases", function () {
     a.set(tx, 2);
     tx.commit();
 
-    chai.expect(b.value).to.equal(6);
+    chai.expect(b.value()).to.equal(6);
     chai.expect(combineCount).to.equal(2);
     chai.expect(onValueCount).to.equal(2);
   });

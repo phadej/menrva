@@ -32,9 +32,9 @@ describe("zoom", function () {
   });
 
   it("get functionality", function () {
-    chai.expect(b.value).to.equal(1);
-    chai.expect(c.value).to.equal("hello world");
-    chai.expect(d.value).to.equal(undefined);
+    chai.expect(b.value()).to.equal(1);
+    chai.expect(c.value()).to.equal("hello world");
+    chai.expect(d.value()).to.equal(undefined);
   });
 
   it("set functionality - parent", function () {
@@ -54,11 +54,11 @@ describe("zoom", function () {
     });
     tx.commit();
 
-    chai.expect(b.value).to.equal(2);
-    chai.expect(c.value).to.equal("hello world");
-    chai.expect(d.value).to.equal(undefined);
-    chai.expect(e.value).to.deep.equal({bar: 2, baz: 2});
-    chai.expect(f.value).to.equal(2);
+    chai.expect(b.value()).to.equal(2);
+    chai.expect(c.value()).to.equal("hello world");
+    chai.expect(d.value()).to.equal(undefined);
+    chai.expect(e.value()).to.deep.equal({bar: 2, baz: 2});
+    chai.expect(f.value()).to.equal(2);
 
     chai.expect(bCount).to.equal(2);
     chai.expect(cCount).to.equal(1);
@@ -72,9 +72,9 @@ describe("zoom", function () {
     b.set(tx, 3);
     tx.commit();    
 
-    chai.expect(b.value).to.equal(3);
-    chai.expect(e.value).to.deep.equal({ bar: 3, baz: 2});
-    chai.expect(f.value).to.equal(2);
+    chai.expect(b.value()).to.equal(3);
+    chai.expect(e.value()).to.deep.equal({ bar: 3, baz: 2});
+    chai.expect(f.value()).to.equal(2);
 
     chai.expect(bCount).to.equal(2);
     chai.expect(cCount).to.equal(1);
@@ -88,7 +88,7 @@ describe("zoom", function () {
     d.set(tx, "something");
     tx.commit();
 
-    chai.expect(a.value).to.deep.equal({
+    chai.expect(a.value()).to.deep.equal({
       foo: {
         bar: 1,
         baz: 2
@@ -113,9 +113,9 @@ describe("zoom", function () {
     });
     tx.commit();    
 
-    chai.expect(b.value).to.equal(3);
-    chai.expect(e.value).to.deep.equal({ bar: 3, baz: 2});
-    chai.expect(f.value).to.equal(2);
+    chai.expect(b.value()).to.equal(3);
+    chai.expect(e.value()).to.deep.equal({ bar: 3, baz: 2});
+    chai.expect(f.value()).to.equal(2);
 
     chai.expect(bCount).to.equal(2);
     chai.expect(cCount).to.equal(1);
@@ -131,7 +131,7 @@ describe("zoom", function () {
     });
     tx.commit();
 
-    chai.expect(a.value).to.deep.equal({
+    chai.expect(a.value()).to.deep.equal({
       foo: {
         bar: 1,
         baz: 2

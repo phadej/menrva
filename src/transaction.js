@@ -89,7 +89,7 @@ function calculateUpdates(actions) {
     if (!update) {
       update = {
         signal: action.signal,
-        value: action.signal.value,
+        value: action.signal.v,
       };
       updates[action.signal.index] = update;
     }
@@ -114,9 +114,9 @@ function initialSet(updates) {
   for (var i = 0; i < len; i++) {
     var update = updates[i];
     // if different value
-    if (!update.signal.eq(update.signal.value, update.value)) {
+    if (!update.signal.eq(update.signal.v, update.value)) {
       // set it
-      update.signal.value = update.value;
+      update.signal.v = update.value;
 
       // collect updated source signal
       updated.push(update.signal);
@@ -129,7 +129,7 @@ function triggerOnValue(updated) {
   var len = updated.length;
   for (var i = 0; i < len; i++) {
     var updatedSignal = updated[i];
-    var value = updatedSignal.value;
+    var value = updatedSignal.v;
     var callbacks = updatedSignal.callbacks;
     var callbacksLen = callbacks.length;
     for (var j = 0; j < callbacksLen; j++) {
@@ -139,6 +139,7 @@ function triggerOnValue(updated) {
 }
 
 Transaction.prototype.commit = function () {
+
   // clear timeout
   if (this.commitScheduled) {
     clearTimeout(this.commitScheduled);
@@ -188,9 +189,9 @@ Transaction.prototype.commit = function () {
       var value = signal.calculate();
 
       // if value is changed
-      if (!signal.eq(signal.value, value)) {
+      if (!signal.eq(signal.v, value)) {
         // set the value
-        signal.value = value;
+        signal.v = value;
 
         // add signal to updated list
         updated.push(signal);

@@ -27,7 +27,7 @@ describe("transaction", function () {
         count += 1;
       });
 
-      chai.expect(c.value).to.equal(3);
+      chai.expect(c.value()).to.equal(3);
       chai.expect(count).to.equal(1);
 
       var tx = menrva.transaction();
@@ -35,7 +35,7 @@ describe("transaction", function () {
       a.set(tx, 3);
       tx.commit();
 
-      chai.expect(c.value).to.equal(7);
+      chai.expect(c.value()).to.equal(7);
       chai.expect(count).to.equal(2);
     });
 
@@ -45,7 +45,7 @@ describe("transaction", function () {
         count += 1;
       });
 
-      chai.expect(c.value).to.equal(3);
+      chai.expect(c.value()).to.equal(3);
       chai.expect(count).to.equal(1);
 
       var tx = menrva.transaction();
@@ -53,7 +53,7 @@ describe("transaction", function () {
       a.set(tx, 1);
       tx.commit();
 
-      chai.expect(c.value).to.equal(3);
+      chai.expect(c.value()).to.equal(3);
       chai.expect(count).to.equal(1);
     });
   });
@@ -65,7 +65,7 @@ describe("transaction", function () {
         count += 1;
       });
 
-      chai.expect(c.value).to.equal(3);
+      chai.expect(c.value()).to.equal(3);
       chai.expect(count).to.equal(1);
 
       var tx = menrva.transaction();
@@ -75,7 +75,7 @@ describe("transaction", function () {
       // TODO: we can make this either fail for rollbacked transactions, or let set's do nothing
       tx.commit();
 
-      chai.expect(c.value).to.equal(3);
+      chai.expect(c.value()).to.equal(3);
       chai.expect(count).to.equal(1);
     });
 
@@ -85,7 +85,7 @@ describe("transaction", function () {
         count += 1;
       });
 
-      chai.expect(c.value).to.equal(3);
+      chai.expect(c.value()).to.equal(3);
       chai.expect(count).to.equal(1);
 
       var tx = menrva.transaction();
@@ -96,7 +96,7 @@ describe("transaction", function () {
       // TODO: we can make this either fail for rollbacked transactions, or let set's do nothing
       tx.commit();
 
-      chai.expect(c.value).to.equal(3);
+      chai.expect(c.value()).to.equal(3);
       chai.expect(count).to.equal(1);
     });
   });
@@ -107,14 +107,14 @@ describe("transaction", function () {
       count += 1;
     });
 
-    chai.expect(c.value).to.equal(3);
+    chai.expect(c.value()).to.equal(3);
     chai.expect(count).to.equal(1);
 
     var tx = menrva.transaction();
     a.set(tx, 2);
 
     setTimeout(function () {
-      chai.expect(c.value).to.equal(5);
+      chai.expect(c.value()).to.equal(5);
       chai.expect(count).to.equal(2);
       done();
     }, 10)
@@ -143,7 +143,7 @@ describe("transaction - a + b", function () {
         count += 1;
       });
 
-      chai.expect(c.value).to.equal(3);
+      chai.expect(c.value()).to.equal(3);
       chai.expect(count).to.equal(1);
 
       var tx = menrva.transaction();
@@ -151,7 +151,7 @@ describe("transaction - a + b", function () {
       b.set(tx, 3);
       tx.commit();
 
-      chai.expect(c.value).to.equal(5);
+      chai.expect(c.value()).to.equal(5);
       chai.expect(count).to.equal(2);
     });
 
@@ -161,7 +161,7 @@ describe("transaction - a + b", function () {
         count += 1;
       });
 
-      chai.expect(c.value).to.equal(3);
+      chai.expect(c.value()).to.equal(3);
       chai.expect(count).to.equal(1);
 
       var tx = menrva.transaction();
@@ -169,7 +169,7 @@ describe("transaction - a + b", function () {
       b.set(tx, 1);
       tx.commit();
 
-      chai.expect(c.value).to.equal(3);
+      chai.expect(c.value()).to.equal(3);
       chai.expect(count).to.equal(1);
     });
   });
@@ -203,7 +203,7 @@ describe("transaction - a + b + c", function () {
         count += 1;
       });
 
-      chai.expect(e.value).to.equal(6);
+      chai.expect(e.value()).to.equal(6);
       chai.expect(count).to.equal(1);
 
       var tx = menrva.transaction();
@@ -211,7 +211,7 @@ describe("transaction - a + b + c", function () {
       b.set(tx, 3);
       tx.commit();
 
-      chai.expect(e.value).to.equal(8);
+      chai.expect(e.value()).to.equal(8);
       chai.expect(count).to.equal(2);
     });
 
@@ -226,8 +226,8 @@ describe("transaction - a + b + c", function () {
         countE += 1;
       });
 
-      chai.expect(d.value).to.equal(3);
-      chai.expect(e.value).to.equal(6);
+      chai.expect(d.value()).to.equal(3);
+      chai.expect(e.value()).to.equal(6);
       chai.expect(countD).to.equal(1);
       chai.expect(countE).to.equal(1);
 
@@ -237,8 +237,8 @@ describe("transaction - a + b + c", function () {
       c.set(tx, 1);
       tx.commit();
 
-      chai.expect(d.value).to.equal(5);
-      chai.expect(e.value).to.equal(6);
+      chai.expect(d.value()).to.equal(5);
+      chai.expect(e.value()).to.equal(6);
       chai.expect(countD).to.equal(2);
       chai.expect(countE).to.equal(1);
     });
@@ -257,39 +257,39 @@ describe("transaction - a + b + c", function () {
     });
 
     it("imperative", function () {
-      chai.expect(a.value).to.equal(1);
-      chai.expect(b.value).to.equal(2);
+      chai.expect(a.value()).to.equal(1);
+      chai.expect(b.value()).to.equal(2);
 
       var tx = menrva.transaction();
       a.set(tx, 42);
       b.modify(tx, double);
       tx.commit();
 
-      chai.expect(a.value).to.equal(42);
-      chai.expect(b.value).to.equal(4);
+      chai.expect(a.value()).to.equal(42);
+      chai.expect(b.value()).to.equal(4);
     });
 
     it("chain", function () {
-      chai.expect(a.value).to.equal(1);
-      chai.expect(b.value).to.equal(2);
+      chai.expect(a.value()).to.equal(1);
+      chai.expect(b.value()).to.equal(2);
 
       menrva.transaction()
         .set(a, 42)
         .modify(b, double)
         .commit();
 
-      chai.expect(a.value).to.equal(42);
-      chai.expect(b.value).to.equal(4);
+      chai.expect(a.value()).to.equal(42);
+      chai.expect(b.value()).to.equal(4);
     });
 
     it("short", function () {
-      chai.expect(a.value).to.equal(1);
-      chai.expect(b.value).to.equal(2);
+      chai.expect(a.value()).to.equal(1);
+      chai.expect(b.value()).to.equal(2);
 
       menrva.transaction([a, 42, b, double]).commit();
 
-      chai.expect(a.value).to.equal(42);
-      chai.expect(b.value).to.equal(4);
+      chai.expect(a.value()).to.equal(42);
+      chai.expect(b.value()).to.equal(4);
     });
   });
 });

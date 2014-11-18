@@ -28,7 +28,7 @@ describe("triangle shape", function () {
 
   describe("initial case", function () {
     it("value is calculated already", function () {
-      chai.expect(c.value).to.equal(3);
+      chai.expect(c.value()).to.equal(3);
     });
     
     it("when adding onValue callback, it's executed synchronously", function () {
@@ -49,18 +49,18 @@ describe("triangle shape", function () {
       count += 1;
     });
 
-    chai.expect(c.value).to.equal(3);
+    chai.expect(c.value()).to.equal(3);
     chai.expect(count).to.equal(1);
 
     var tx = menrva.transaction();
     a.set(tx, 2);
 
-    chai.expect(c.value).to.equal(3);
+    chai.expect(c.value()).to.equal(3);
     chai.expect(count).to.equal(1);
 
     tx.commit();
 
-    chai.expect(c.value).to.equal(5);
+    chai.expect(c.value()).to.equal(5);
     chai.expect(count).to.equal(2);
   });
 });

@@ -28,7 +28,7 @@ var index = 0;
 function initSignal(signal, value, eq) {
   signal.children = [];
   signal.callbacks = [];
-  signal.value = value;
+  signal.v = value;
 
   // `index` is used to implement faster sets of signals
   signal.index = index++;
@@ -55,7 +55,7 @@ CombinedSignal.prototype.calculateRank = function () {
 };
 
 CombinedSignal.prototype.calculate = function () {
-  return this.f.apply(undefined, util.pluck(this.parents, "value"));
+  return this.f.apply(undefined, util.pluck(this.parents, "v"));
 };
 
 /**
@@ -87,7 +87,7 @@ Signal.prototype.onValue = function (callback) {
   this.callbacks.push(wrapped);
 
   // execute the callback *synchronously*
-  callback(this.value);
+  callback(this.v);
 
   // return unsubscriber
   var that = this;
@@ -97,6 +97,17 @@ Signal.prototype.onValue = function (callback) {
       that.callbacks.splice(index, 1);
     }
   };
+};
+
+/**
+  #### signal.value()
+
+  > value (@ : Signal a): Signal a
+
+  Returns the current value of signal.
+*/ 
+Signal.prototype.value = function() {
+  return this.v;
 };
 
 /**

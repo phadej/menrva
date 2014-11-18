@@ -27,7 +27,7 @@ describe("signal", function () {
         count += 1;
       });
 
-      chai.expect(c.value).to.equal(3);
+      chai.expect(c.value()).to.equal(3);
       chai.expect(count).to.equal(1);
 
       var tx1 = menrva.transaction();
@@ -35,14 +35,14 @@ describe("signal", function () {
       a.modify(tx1, function (x) { return x * x; });
       tx1.commit();
 
-      chai.expect(c.value).to.equal(9);
+      chai.expect(c.value()).to.equal(9);
       chai.expect(count).to.equal(2);
 
       var tx2 = menrva.transaction();
       a.modify(tx2, function (x) { return x * x; });
       tx2.commit();
 
-      chai.expect(c.value).to.equal(33);
+      chai.expect(c.value()).to.equal(33);
       chai.expect(count).to.equal(3);
     });
   });
@@ -54,14 +54,14 @@ describe("signal", function () {
         count += 1;
       });
 
-      chai.expect(c.value).to.equal(3);
+      chai.expect(c.value()).to.equal(3);
       chai.expect(count).to.equal(1);
 
       var tx1 = menrva.transaction();
       a.set(tx1, 2);
       tx1.commit();
 
-      chai.expect(c.value).to.equal(5);
+      chai.expect(c.value()).to.equal(5);
       chai.expect(count).to.equal(2);
 
       unsub();
@@ -70,7 +70,7 @@ describe("signal", function () {
       a.set(tx2, 3);
       tx2.commit();
 
-      chai.expect(c.value).to.equal(7);
+      chai.expect(c.value()).to.equal(7);
       chai.expect(count).to.equal(2);
 
       // you can unsub many times - second and following calls are no-op
@@ -80,7 +80,7 @@ describe("signal", function () {
       a.set(tx3, 2);
       tx3.commit();
 
-      chai.expect(c.value).to.equal(5);
+      chai.expect(c.value()).to.equal(5);
       chai.expect(count).to.equal(2);
     });
   });
