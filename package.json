@@ -41,7 +41,7 @@
     "chai": "~1.9.1",
     "benchmark": "~1.0.0",
     "rx": "2.3.0",
-    "baconjs": "0.7.18",
+    "baconjs": "0.7.34",
     "bacon.model": "0.1.10",
     "jsstana": "0.0.21",
     "estraverse": "~1.5.0",
