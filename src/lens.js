@@ -31,7 +31,7 @@ Lens.prototype.calculateRank = function () {
 };
 
 Lens.prototype.calculate = function () {
-  return util.getPath(this.parents[0].value, this.path);
+  return util.getPath(this.parents[0].v, this.path);
 };
 
 /**
