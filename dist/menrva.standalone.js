@@ -127,7 +127,7 @@ Lens.prototype.calculateRank = function () {
 };
 
 Lens.prototype.calculate = function () {
-  return util.getPath(this.parents[0].value, this.path);
+  return util.getPath(this.parents[0].v, this.path);
 };
 
 /**
@@ -378,7 +378,7 @@ var index = 0;
 function initSignal(signal, value, eq) {
   signal.children = [];
   signal.callbacks = [];
-  signal.value = value;
+  signal.v = value;
 
   // `index` is used to implement faster sets of signals
   signal.index = index++;
@@ -405,7 +405,7 @@ CombinedSignal.prototype.calculateRank = function () {
 };
 
 CombinedSignal.prototype.calculate = function () {
-  return this.f.apply(undefined, util.pluck(this.parents, "value"));
+  return this.f.apply(undefined, util.pluck(this.parents, "v"));
 };
 
 /**
@@ -437,7 +437,7 @@ Signal.prototype.onValue = function (callback) {
   this.callbacks.push(wrapped);
 
   // execute the callback *synchronously*
-  callback(this.value);
+  callback(this.v);
 
   // return unsubscriber
   var that = this;
@@ -447,6 +447,17 @@ Signal.prototype.onValue = function (callback) {
       that.callbacks.splice(index, 1);
     }
   };
+};
+
+/**
+  #### signal.value()
+
+  > value (@ : Signal a): Signal a
+
+  Returns the current value of signal.
+*/ 
+Signal.prototype.value = function() {
+  return this.v;
 };
 
 /**
@@ -634,7 +645,7 @@ function calculateUpdates(actions) {
     if (!update) {
       update = {
         signal: action.signal,
-        value: action.signal.value,
+        value: action.signal.v,
       };
       updates[action.signal.index] = update;
     }
@@ -659,9 +670,9 @@ function initialSet(updates) {
   for (var i = 0; i < len; i++) {
     var update = updates[i];
     // if different value
-    if (!update.signal.eq(update.signal.value, update.value)) {
+    if (!update.signal.eq(update.signal.v, update.value)) {
       // set it
-      update.signal.value = update.value;
+      update.signal.v = update.value;
 
       // collect updated source signal
       updated.push(update.signal);
@@ -674,7 +685,7 @@ function triggerOnValue(updated) {
   var len = updated.length;
   for (var i = 0; i < len; i++) {
     var updatedSignal = updated[i];
-    var value = updatedSignal.value;
+    var value = updatedSignal.v;
     var callbacks = updatedSignal.callbacks;
     var callbacksLen = callbacks.length;
     for (var j = 0; j < callbacksLen; j++) {
@@ -684,6 +695,7 @@ function triggerOnValue(updated) {
 }
 
 Transaction.prototype.commit = function () {
+
   // clear timeout
   if (this.commitScheduled) {
     clearTimeout(this.commitScheduled);
@@ -733,9 +745,9 @@ Transaction.prototype.commit = function () {
       var value = signal.calculate();
 
       // if value is changed
-      if (!signal.eq(signal.value, value)) {
+      if (!signal.eq(signal.v, value)) {
         // set the value
-        signal.value = value;
+        signal.v = value;
 
         // add signal to updated list
         updated.push(signal);

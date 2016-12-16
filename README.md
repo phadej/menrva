@@ -46,6 +46,13 @@ After than `callback` will be called, each time signal's value changes.
 The return value is a function, which will remove the callback if executed.
 
 
+#### signal.value()
+
+> value (@ : Signal a): Signal a
+
+Returns the current value of signal.
+
+
 ### Source
 
 A signal which value you can set.
