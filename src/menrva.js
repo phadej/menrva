@@ -64,7 +64,7 @@ require("./lens.js");
 var convenience = require("./convenience.js");
 
 // version
-var version = "0.0.6";
+var version = "0.0.7";
 
 module.exports = {
   egal: egal,
@@ -74,6 +74,8 @@ module.exports = {
   source: signal.source,
   combine: signal.combine,
   tuple: convenience.tuple,
+  sequence: convenience.sequence,
+  record: convenience.record,
   transaction: transaction,
   version: version,
 };

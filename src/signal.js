@@ -55,16 +55,18 @@ CombinedSignal.prototype.calculateRank = function () {
 };
 
 CombinedSignal.prototype.calculate = function () {
-  return this.f.apply(undefined, util.pluck(this.parents, "v"));
+  return this.f.call(undefined, util.pluck(this.parents, "v"));
 };
 
 /**
   #### signal.map
 
   > map (@ : Signal a, f : a -> b, eq = egal : b -> b -> boolean) : Signal b
-*/ 
+*/
 Signal.prototype.map = function(f, eq) {
-  var mapped = new CombinedSignal([this], f, eq);
+  var mapped = new CombinedSignal([this], function (xs) {
+   return f(xs[0]);
+  }, eq);
   this.children.push(mapped);
   return mapped;
 };
@@ -105,7 +107,7 @@ Signal.prototype.onValue = function (callback) {
   > value (@ : Signal a): Signal a
 
   Returns the current value of signal.
-*/ 
+*/
 Signal.prototype.value = function() {
   return this.v;
 };
@@ -185,7 +187,9 @@ function combine() {
   var signals = Array.prototype.slice.call(arguments, 0, -1);
   var f = arguments[arguments.length - 1];
 
-  var mapped = new CombinedSignal(signals, f);
+  var mapped = new CombinedSignal(signals, function (values) {
+    return f.apply(undefined, values);
+  });
 
   // connect to parent
   signals.forEach(function (parent) {
@@ -201,4 +205,6 @@ module.exports = {
   source: source,
   combine: combine,
   initSignal: initSignal,
+  // Internal:
+  CombinedSignal: CombinedSignal,
 };

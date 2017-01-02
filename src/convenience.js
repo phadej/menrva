@@ -9,6 +9,8 @@
 "use strict";
 
 var signal = require("./signal.js");
+var util = require("./util.js");
+
 /**
   ### Convenience methods
 
@@ -46,16 +48,78 @@ signal.Signal.prototype.onSpread = function (callback) {
 
   Combine signals into tuple.
 */
-function argsToArray() {
-  return Array.prototype.slice.call(arguments);
-}
 
 function tuple() {
   var signals = Array.prototype.slice.call(arguments);
-  var args = signals.concat([argsToArray]);
-  return signal.combine.apply(signal, args);
+  var mapped = new (signal.CombinedSignal)(signals, util.identity);
+
+  // connect to parent
+  signals.forEach(function (parent) {
+    parent.children.push(mapped);
+  });
+
+  return mapped;
+}
+
+/**
+  #### sequence
+
+  > sequence [Signal a, Signal b, ..] : Signal [a, b...]
+
+  In promise libraries this might be called `all`.
+*/
+function sequence(signals) {
+  var mapped = new (signal.CombinedSignal)(signals, util.identity);
+
+  // connect to parent
+  signals.forEach(function (parent) {
+    parent.children.push(mapped);
+  });
+
+  return mapped;
+}
+
+/**
+  #### record
+
+  > record {k: Signal a, l: Signal b...} : Signal {k: a, l: b...}
+
+  Like `sequence` but for records i.e. objects.
+*/
+
+function record(rec) {
+  var keys = [];
+  var signals = [];
+
+  for (var k in rec) {
+    // if (Object.prototype.hasOwnProperty.call(rec, k)) {
+    keys.push(k);
+    signals.push(rec[k]);
+    // }
+  }
+
+  function toObject(values) {
+    var res = {};
+
+    for (var i = 0; i < keys.length; i++) {
+      res[keys[i]] = values[i];
+    }
+
+    return res;
+  }
+
+  var mapped = new (signal.CombinedSignal)(signals, toObject);
+
+  // connect to parent
+  signals.forEach(function (parent) {
+    parent.children.push(mapped);
+  });
+
+  return mapped;
 }
 
 module.exports = {
   tuple: tuple,
+  sequence: sequence,
+  record: record,
 };

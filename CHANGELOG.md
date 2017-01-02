@@ -1,3 +1,4 @@
+- **0.0.7** `sequence` and `record`
 - **0.0.6** Convenience methods
 - **0.0.5** Lens
 - **0.0.4** Internal improvements

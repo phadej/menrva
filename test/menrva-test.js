@@ -30,7 +30,7 @@ describe("triangle shape", function () {
     it("value is calculated already", function () {
       chai.expect(c.value()).to.equal(3);
     });
-    
+
     it("when adding onValue callback, it's executed synchronously", function () {
       var x = 2;
       var count = 0;
