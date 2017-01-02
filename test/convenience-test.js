@@ -44,4 +44,46 @@ describe("convenience features", function () {
       ]);
     });
   });
+
+  describe("sequence", function () {
+    it("is Traversable method", function () {
+      var a = menrva.source(1);
+      var b = menrva.source(2);
+      var c = menrva.source(3);
+
+      var stub = sinon.stub();
+
+      menrva.sequence([a, b, c]).onValue(stub);
+
+      menrva.transaction([a, 4]).commit();
+      menrva.transaction([b, 5, c, 6]).commit();
+
+      chai.expect(stub.args).to.deep.equal([
+        [[1, 2, 3]],
+        [[4, 2, 3]],
+        [[4, 5, 6]],
+      ]);
+    });
+  });
+
+  describe("record", function () {
+    it("is Traversable method", function () {
+      var a = menrva.source(1);
+      var b = menrva.source(2);
+      var c = menrva.source(3);
+
+      var stub = sinon.stub();
+
+      menrva.record({k: a, l: b, m: c}).onValue(stub);
+
+      menrva.transaction([a, 4]).commit();
+      menrva.transaction([b, 5, c, 6]).commit();
+
+      chai.expect(stub.args).to.deep.equal([
+        [{k: 1, l: 2, m: 3}],
+        [{k: 4, l: 2, m: 3}],
+        [{k: 4, l: 5, m: 6}],
+      ]);
+    });
+  });
 });

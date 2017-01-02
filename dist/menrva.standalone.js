@@ -10,6 +10,8 @@
 "use strict";
 
 var signal = require("./signal.js");
+var util = require("./util.js");
+
 /**
   ### Convenience methods
 
@@ -47,21 +49,83 @@ signal.Signal.prototype.onSpread = function (callback) {
 
   Combine signals into tuple.
 */
-function argsToArray() {
-  return Array.prototype.slice.call(arguments);
-}
 
 function tuple() {
   var signals = Array.prototype.slice.call(arguments);
-  var args = signals.concat([argsToArray]);
-  return signal.combine.apply(signal, args);
+  var mapped = new (signal.CombinedSignal)(signals, util.identity);
+
+  // connect to parent
+  signals.forEach(function (parent) {
+    parent.children.push(mapped);
+  });
+
+  return mapped;
+}
+
+/**
+  #### sequence
+
+  > sequence [Signal a, Signal b, ..] : Signal [a, b...]
+
+  In promise libraries this might be called `all`.
+*/
+function sequence(signals) {
+  var mapped = new (signal.CombinedSignal)(signals, util.identity);
+
+  // connect to parent
+  signals.forEach(function (parent) {
+    parent.children.push(mapped);
+  });
+
+  return mapped;
+}
+
+/**
+  #### record
+
+  > record {k: Signal a, l: Signal b...} : Signal {k: a, l: b...}
+
+  Like `sequence` but for records i.e. objects.
+*/
+
+function record(rec) {
+  var keys = [];
+  var signals = [];
+
+  for (var k in rec) {
+    // if (Object.prototype.hasOwnProperty.call(rec, k)) {
+    keys.push(k);
+    signals.push(rec[k]);
+    // }
+  }
+
+  function toObject(values) {
+    var res = {};
+
+    for (var i = 0; i < keys.length; i++) {
+      res[keys[i]] = values[i];
+    }
+
+    return res;
+  }
+
+  var mapped = new (signal.CombinedSignal)(signals, toObject);
+
+  // connect to parent
+  signals.forEach(function (parent) {
+    parent.children.push(mapped);
+  });
+
+  return mapped;
 }
 
 module.exports = {
   tuple: tuple,
+  sequence: sequence,
+  record: record,
 };
 
-},{"./signal.js":6}],2:[function(require,module,exports){
+},{"./signal.js":6,"./util.js":8}],2:[function(require,module,exports){
 /*
  * menrva
  * https://github.com/phadej/menrva
@@ -229,7 +293,7 @@ require("./lens.js");
 var convenience = require("./convenience.js");
 
 // version
-var version = "0.0.6";
+var version = "0.0.7";
 
 module.exports = {
   egal: egal,
@@ -239,6 +303,8 @@ module.exports = {
   source: signal.source,
   combine: signal.combine,
   tuple: convenience.tuple,
+  sequence: convenience.sequence,
+  record: convenience.record,
   transaction: transaction,
   version: version,
 };
@@ -405,16 +471,18 @@ CombinedSignal.prototype.calculateRank = function () {
 };
 
 CombinedSignal.prototype.calculate = function () {
-  return this.f.apply(undefined, util.pluck(this.parents, "v"));
+  return this.f.call(undefined, util.pluck(this.parents, "v"));
 };
 
 /**
   #### signal.map
 
   > map (@ : Signal a, f : a -> b, eq = egal : b -> b -> boolean) : Signal b
-*/ 
+*/
 Signal.prototype.map = function(f, eq) {
-  var mapped = new CombinedSignal([this], f, eq);
+  var mapped = new CombinedSignal([this], function (xs) {
+   return f(xs[0]);
+  }, eq);
   this.children.push(mapped);
   return mapped;
 };
@@ -455,7 +523,7 @@ Signal.prototype.onValue = function (callback) {
   > value (@ : Signal a): Signal a
 
   Returns the current value of signal.
-*/ 
+*/
 Signal.prototype.value = function() {
   return this.v;
 };
@@ -535,7 +603,9 @@ function combine() {
   var signals = Array.prototype.slice.call(arguments, 0, -1);
   var f = arguments[arguments.length - 1];
 
-  var mapped = new CombinedSignal(signals, f);
+  var mapped = new CombinedSignal(signals, function (values) {
+    return f.apply(undefined, values);
+  });
 
   // connect to parent
   signals.forEach(function (parent) {
@@ -551,6 +621,8 @@ module.exports = {
   source: source,
   combine: combine,
   initSignal: initSignal,
+  // Internal:
+  CombinedSignal: CombinedSignal,
 };
 
 },{"./egal.js":2,"./util.js":8}],7:[function(require,module,exports){
